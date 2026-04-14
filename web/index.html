@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Prototype for an AWS content moderation system.">
+    <title>AWS Content Moderation Prototype</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>AWS Content Moderation Prototype</h1>
+
+        <hr>
+
+        <p class="description">
+            This is a local prototype for a future AWS-powered image content moderation system.
+            Upload an image below to simulate the moderation workflow.
+        </p>
+
+        <!--upload here -->
+        <div class="section">
+            <h2>Upload an Image</h2>
+
+            <label for="fileInput">Select an image file (JPG, PNG, GIF, WEBP — max 5 MB):</label>
+            <input type="file" id="fileInput" accept="image/*">
+
+            <div id="errorArea" class="error hidden">
+                <p id="errorMessage"></p>
+            </div>
+
+            <div id="previewArea" class="preview hidden">
+                <h3>Preview</h3>
+                <img id="previewImage" src="" alt="Preview of selected image">
+                <p id="fileName"></p>
+                <p id="fileSize"></p>
+            </div>
+
+            <button id="uploadBtn" disabled>Upload Image</button>
+        </div>
+
+        <div id="resultSection" class="section result hidden">
+            <h2>Moderation Pipeline Result</h2>
+
+            <ul id="workflowSteps">
+                <!-- steps get injected here by JS -->
+            </ul>
+
+
+            <button id="resetBtn">Upload Another Image</button>
+        </div>
+
+        <hr>
+
+        <!-- smol footer so it looks legit -->
+        <footer>
+            <p>CC Final Project — AWS Content Moderation Prototype</p>
+            <p>Backend status: <span id="serverStatus">Checking...</span></p>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

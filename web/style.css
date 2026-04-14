@@ -1,0 +1,163 @@
+/* ===================================================
+   AWS Content Moderation Prototype — Bare-bones CSS
+   plain blueprint style, no animations, no fancy stuff
+   =================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #fff;
+    color: #000;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+h3 {
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 16px 0;
+}
+
+.description {
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+/* --- sections --- */
+.section {
+    margin-bottom: 16px;
+}
+
+/* --- file input --- */
+label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+input[type="file"] {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+/* --- buttons --- */
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #333;
+    background: #eee;
+    margin-top: 10px;
+}
+
+button:disabled {
+    color: #999;
+    border-color: #ccc;
+    cursor: default;
+}
+
+/* --- error --- */
+.error {
+    border: 1px solid #c00;
+    background: #fee;
+    color: #c00;
+    padding: 8px 10px;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+/* --- preview --- */
+.preview {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.preview img {
+    max-width: 100%;
+    max-height: 250px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.preview p {
+    font-size: 12px;
+    color: #444;
+}
+
+/* --- result --- */
+.result ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 12px;
+}
+
+.result li {
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.notice {
+    border: 1px solid #cc0;
+    background: #ffc;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* --- footer --- */
+footer {
+    font-size: 12px;
+    color: #888;
+}
+
+footer span {
+    font-weight: bold;
+}
+
+footer span.online {
+    color: green;
+}
+
+footer span.offline {
+    color: red;
+}
+
+/* --- utility --- */
+.hidden {
+    display: none;
+}
