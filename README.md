@@ -8,16 +8,35 @@ A local prototype/demo for a future AWS-powered image content moderation system.
 ## 📁 Project Structure
 
 ```
-CCFINAL/
+aws-content-moderation-project/
+│
+├── lambda/
+│   ├── get-upload-url.js          ← Generates presigned S3 upload URL
+│   ├── process-image.js          ← Triggered by S3, runs Rekognition scan
+│   └── get-moderation-result.js  ← Fetches result from DynamoDB
+│
 ├── src/
-│   ├── Main.java           ← Entry point, starts the server
-│   └── UploadServer.java   ← Simple HTTP server (serves files + /status endpoint)
+│   ├── Main.java                 ← Entry point, starts local Java server
+│   ├── UploadServer.java         ← Simple HTTP server (serves frontend + /status)
+│   ├── Main.class                ← Compiled Java file
+│   ├── UploadServer.class        ← Compiled server class
+│   ├── UploadServer$StaticFileHandler.class
+│   └── UploadServer$StatusHandler.class
+│
+├── out/
+│   ├── Main.class
+│   ├── UploadServer.class
+│   ├── UploadServer$StaticFileHandler.class
+│   └── UploadServer$StatusHandler.class
+│   ← Compiled output directory
+│
 ├── web/
-│   ├── index.html           ← Main page (upload form, preview, result area)
-│   ├── style.css            ← Styling
-│   └── script.js            ← Frontend logic (validation, preview, fake upload)
-├── out/                     ← Compiled .class files (generated after compiling)
-└── README.md                ← You are here
+│   ├── index.html                ← Main UI (upload form, preview, results)
+│   ├── script.js                 ← Frontend logic (upload + polling)
+│   └── style.css                 ← Styling
+│
+├── LICENSE
+└── README.md
 ```
 
 ---
@@ -72,38 +91,55 @@ Press `Ctrl+C` in the terminal.
 1. User opens the page in a browser
 2. Selects an image file (JPG, PNG, GIF, or WEBP — max 5 MB)
 3. The image is previewed on-screen
-4. User clicks **Upload Image**
-5. The system validates the file locally (does **not** upload anywhere)
-6. A prototype result is displayed showing the future AWS pipeline stages:
-   - ✅ Image received
-   - 📦 Ready for S3 upload
-   - 🔍 Ready for moderation scan (Rekognition)
-   - 👤 Ready for admin review workflow
+4. User clicks Upload Image
+5. The frontend sends a request to API Gateway to get a presigned upload URL
+6. The image is uploaded directly to Amazon S3 using that URL
+7. Once uploaded:
+      - S3 automatically triggers a Lambda function
+      - The Lambda sends the image to Amazon Rekognition for moderation
+8. Rekognition analyzes the image and returns moderation labels
+9. The result is stored in DynamoDB
+10. The frontend continuously polls the backend for results
+11. Once available, the system displays:
+      - Uploaded to S3
+      - Scanned by Rekognition
+      - Moderation result (APPROVED / FLAGGED / BLOCKED)
+      - Detected moderation labels
 
 ---
 
 ## ⚙️ Tech Stack
 
-| Layer    | Technology |
-|----------|------------|
-| Backend  | Java (built-in `com.sun.net.httpserver`) |
-| Frontend | HTML, CSS, JavaScript |
-| Database | None |
-| Cloud    | None (prototype only) |
+| Layer       | Technology            |
+| ----------- | --------------------- |
+| Frontend    | HTML, CSS, JavaScript |
+| Backend     | AWS Lambda (Node.js)  |
+| API         | Amazon API Gateway    |
+| Storage     | Amazon S3             |
+| AI          | Amazon Rekognition    |
+| Database    | Amazon DynamoDB       |
+| Auth/Access | AWS IAM               |
+
 
 ---
 
 ## ❌ What This Project Does NOT Include
 
-- Real AWS connection (S3, Lambda, Rekognition, DynamoDB)
-- Authentication or login
-- Actual image uploads to any server or cloud
-- Any external frameworks or libraries
+- User authentication or login system
+- Role-based access control for admins
+- Image deletion or lifecycle management
+- Advanced moderation tuning (confidence thresholds not customized)
+- Production-grade UI/UX
 
 ---
 
 ## 📌 Notes
 
-- The `/status` endpoint returns: `"AWS integration not connected yet. Prototype mode only."`
-- If the Java server is not running, the page will still open (via a local file) but the status badge in the footer will show **Offline**
-- The server uses port **8080** by default — if that port is taken, change the `PORT` constant in `UploadServer.java`
+- Images are uploaded directly to S3 using presigned URLs (no backend file handling)
+- The moderation process is asynchronous, so the frontend uses polling to fetch results
+- If no result is returned immediately, the system retries multiple times before showing an error
+- API Gateway handles all client-to-backend communication
+- IAM roles control permissions for:
+  - S3 upload
+  - Rekognition scan
+  - DynamoDB read/write
