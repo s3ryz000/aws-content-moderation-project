@@ -1,4 +1,4 @@
-// this is already inside AWS Lambda > Functions > get-moderation-results > Code Source
+// this is already inside AWS Lambda > Functions > get-moderation-results > Code Source Ben
 
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 
