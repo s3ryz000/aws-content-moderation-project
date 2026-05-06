@@ -75,14 +75,14 @@ Goal: a user on `localhost:8080` can drag in an image, see it upload, and within
 - [ ] Unit tests for the not-found path and happy path
 
 ### 1.5 Frontend (Vanilla JS)
-- [ ] `index.html` — file input, image preview, status chip, label list
-- [ ] `app.js`:
-  - [ ] Client-side validation (size ≤ 10 MB, MIME in allowlist)
-  - [ ] Request presigned URL → PUT image with progress bar
-  - [ ] Poll `GET /get-moderation-result` every 1.5 s, max 20 attempts, exponential back-off after attempt 10
-  - [ ] Render result with color-coded status (green/amber/red)
-- [ ] `styles.css` — minimal, responsive, no framework
-- [ ] Manual test plan in `docs/test-plan.md`
+- [x] `index.html` — file input, image preview, status chip, label list
+- [x] `app.js`:
+  - [x] Client-side validation (size ≤ 10 MB, MIME in allowlist)
+  - [x] Request presigned URL → PUT image with progress bar
+  - [x] Poll `GET /get-moderation-result` every 1.5 s, max 20 attempts
+  - [x] Render result with color-coded status (green / red / orange)
+- [x] `styles.css` — minimal, responsive, no framework
+- [x] BLOCKED orange state (badge, step icons, step status text)
 
 ### 1.6 Verification
 - [ ] End-to-end happy path: upload a benign cat photo → `APPROVED`
@@ -154,4 +154,4 @@ So we don't get tempted:
 
 ---
 
-*Last updated: 2026-05-06*
+*Last updated: 2026-05-07*
