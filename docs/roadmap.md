@@ -112,11 +112,12 @@ Goal: administrators can review what got flagged or blocked, approve/reject manu
 - [ ] Login screen on the dashboard
 
 ### 2.3 Dashboard UI (still vanilla JS, separate page)
-- [ ] `/admin/index.html` — login → table view
-- [ ] Filter chips: All / Flagged / Blocked / Approved
-- [ ] Image preview on row click (presigned GET URL, short expiry)
-- [ ] Approve / Reject buttons → calls decision endpoint, updates row
-- [ ] CSV export of current filter
+- [-] Login screen — removed from scope (no auth in MVP)
+- [x] `frontend/admin/index.html` — table view at `http://localhost:8080/frontend/admin/`
+- [x] Filter chips: All / Flagged / Blocked / Approved
+- [-] Image preview — removed from scope (bucket is private, no presigned GET endpoint)
+- [x] Approve / Reject buttons → calls decision endpoint, updates row
+- [x] CSV export of current filter
 
 ### 2.4 Verification
 - [ ] An admin can log in, see a flagged image, approve it, and that decision persists
@@ -154,4 +155,4 @@ So we don't get tempted:
 
 ---
 
-*Last updated: 2026-05-07*
+*Last updated: 2026-05-07 (Phase 2.3)*

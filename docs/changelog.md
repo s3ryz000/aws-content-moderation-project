@@ -12,6 +12,15 @@ Sections to use under each release: `Added`, `Changed`, `Deprecated`, `Removed`,
 
 ---
 
+## [0.7.0] — 2026-05-07
+
+### Added
+- `frontend/admin/index.html` — admin dashboard at `http://localhost:8080/frontend/admin/`; table view with filter chips (All / Flagged / Blocked / Approved), approve/reject actions, CSV export
+- `frontend/admin/admin.css` — self-contained styles; reuses same CSS tokens as main frontend
+- `frontend/admin/admin.js` — `loadResults()`, `renderTable()`, `recordDecision()`, `exportCSV()`; no framework, no build step
+
+---
+
 ## [0.6.0] — 2026-05-07
 
 ### Added
