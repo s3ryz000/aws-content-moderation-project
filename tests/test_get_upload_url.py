@@ -5,10 +5,8 @@ import re
 import sys
 
 import boto3
-import pytest
-from moto import mock_aws
-
 from conftest import apigw_event
+from moto import mock_aws
 
 _LAMBDA_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "lambdas", "get_upload_url")

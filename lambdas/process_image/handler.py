@@ -5,7 +5,6 @@ from typing import Any
 from urllib.parse import unquote
 
 import boto3
-
 from policy import determine_status
 
 DYNAMODB_TABLE = os.environ.get("DYNAMODB_TABLE", "image-moderation-results")

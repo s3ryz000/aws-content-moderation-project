@@ -6,9 +6,8 @@ from unittest.mock import patch
 import boto3
 import pytest
 from botocore.exceptions import ClientError
-from moto import mock_aws
-
 from conftest import s3_event
+from moto import mock_aws
 
 _PROCESS_IMAGE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "lambdas", "process_image")
