@@ -47,6 +47,8 @@ jobs:
         run: pytest tests/ --cov=lambdas --cov-report=term-missing --cov-fail-under=80 -v
         env:
           AWS_DEFAULT_REGION: ap-southeast-2
+          AWS_ACCESS_KEY_ID: testing
+          AWS_SECRET_ACCESS_KEY: testing
 
   terraform-validate:
     name: Terraform Validate
