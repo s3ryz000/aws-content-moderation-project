@@ -102,9 +102,7 @@ def test_decision_persists_in_dynamodb():
         None,
     )
 
-    item = ddb.get_item(
-        TableName=TABLE_NAME, Key={"imageKey": {"S": "uploads/img.png"}}
-    )["Item"]
+    item = ddb.get_item(TableName=TABLE_NAME, Key={"imageKey": {"S": "uploads/img.png"}})["Item"]
     assert item["manualDecision"]["S"] == "APPROVED"
     assert item["decidedBy"]["S"] == "admin"
     assert "decisionTimestamp" in item
@@ -125,9 +123,7 @@ def test_original_status_not_overwritten():
         None,
     )
 
-    item = ddb.get_item(
-        TableName=TABLE_NAME, Key={"imageKey": {"S": "uploads/img.png"}}
-    )["Item"]
+    item = ddb.get_item(TableName=TABLE_NAME, Key={"imageKey": {"S": "uploads/img.png"}})["Item"]
     assert item["status"]["S"] == "FLAGGED"
 
 
