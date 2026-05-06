@@ -1,0 +1,157 @@
+# roadmap.md — AWS Content Moderation System
+
+> What we're building, in what order, and why. Update status checkboxes as work lands.
+
+Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[-]` cut from scope
+
+---
+
+## Phase 0 — Project Bootstrap
+
+The boring-but-load-bearing foundation.
+
+- [x] Create repo and `docs/` with `claude.md`, `roadmap.md`, `changelog.md`
+- [x] Capture architecture diagram (`docs/project-architecture.pdf`)
+- [x] `README.md` with one-paragraph project description and local-run instructions
+- [x] `.gitignore` (Python, Terraform, OS junk)
+- [x] AWS account / IAM user `dev` with programmatic access (PowerUserAccess + IAMFullAccess)
+- [x] Configure local AWS profile `content-moderation`
+- [x] Choose AWS region and pin it — **`ap-southeast-2` (Sydney)**, overrides `us-east-1` recommendation; matches existing Lambda code
+- [x] Pick a unique S3 bucket name and reserve it (`content-moderation-bucket-420`)
+
+**Exit criteria:** `terraform plan` runs with zero resources but valid credentials and backend.
+
+---
+
+## Phase 0.5 — Rewrite Node.js Lambdas to Python 3.12
+
+Required before any `aws_lambda_function` Terraform resource can be deployed.
+
+- [x] Rewrite `lambda/get-upload-url.js` → `lambdas/get_upload_url/handler.py`
+- [x] Rewrite `lambda/process-image.js` → `lambdas/process_image/handler.py` (+ `policy.py` for `HARD_BLOCK_CATEGORIES`)
+- [x] Rewrite `lambda/get-moderation-result.js` → `lambdas/get_moderation_result/handler.py`
+- [x] Add `requirements.txt` to each Lambda directory (`boto3` only — it is provided by the Lambda runtime but pin for local testing)
+- [x] Confirm each handler signature: `lambda_handler(event: dict, context) -> dict` with type hints
+
+**Exit criteria:** All three Python handlers pass unit tests locally; `lambda/` (old Node.js) directory can be archived/removed.
+
+---
+
+## Phase 1 — MVP Pipeline (the spine)
+
+Goal: a user on `localhost:8080` can drag in an image, see it upload, and within seconds see `APPROVED`, `FLAGGED`, or `BLOCKED`. No admin dashboard, no auth, no polish.
+
+### 1.1 Infrastructure (Terraform)
+- [ ] S3 bucket — private, versioning on, server-side encryption (SSE-S3)
+- [ ] DynamoDB table `image-moderation-results` — on-demand, PK `imageKey`
+- [ ] IAM roles & policies — one per Lambda, least-privilege
+- [ ] Three Lambda functions (Python 3.12, 256 MB, 10 s timeout for HTTP, 30 s for `process-image`)
+- [ ] API Gateway HTTP API with two routes:
+  - `POST /upload-url` → `cm-get-upload-url`
+  - `GET /get-moderation-result` → `cm-get-moderation-result`
+- [ ] S3 → `cm-process-image` event notification (`s3:ObjectCreated:*`)
+- [ ] CORS on API Gateway for `http://localhost:8080`
+- [ ] Terraform outputs: API base URL, bucket name
+
+### 1.2 Lambda — `cm-get-upload-url`
+- [ ] Validate body: `filename` (string) and `contentType` (allowlist of 4 MIME types)
+- [ ] Generate UUID-based `imageKey` (`uploads/{uuid}.{ext}`)
+- [ ] Return presigned PutObject URL, 300 s expiry, content-type-locked
+- [ ] Unit tests for the allowlist and key generation
+
+### 1.3 Lambda — `cm-process-image`
+- [ ] Parse S3 event, extract `bucketName` + `imageKey`
+- [ ] Call `rekognition.detect_moderation_labels` with `MinConfidence=50`
+- [ ] Apply status logic from `claude.md §5`
+- [ ] Write `{imageKey, bucketName, status, moderationLabels, timestamp}` to DynamoDB
+- [ ] Idempotent: re-running on the same key overwrites cleanly
+- [ ] Unit tests for the status decision function (no AWS calls in those tests)
+
+### 1.4 Lambda — `cm-get-moderation-result`
+- [ ] Validate query string: `imageKey` required, length-bounded
+- [ ] DynamoDB `GetItem` by `imageKey`
+- [ ] Return `404` shape if not found yet (frontend interprets as "still processing")
+- [ ] Return JSON: `{ status, moderationLabels, timestamp }`
+- [ ] Unit tests for the not-found path and happy path
+
+### 1.5 Frontend (Vanilla JS)
+- [ ] `index.html` — file input, image preview, status chip, label list
+- [ ] `app.js`:
+  - [ ] Client-side validation (size ≤ 10 MB, MIME in allowlist)
+  - [ ] Request presigned URL → PUT image with progress bar
+  - [ ] Poll `GET /get-moderation-result` every 1.5 s, max 20 attempts, exponential back-off after attempt 10
+  - [ ] Render result with color-coded status (green/amber/red)
+- [ ] `styles.css` — minimal, responsive, no framework
+- [ ] Manual test plan in `docs/test-plan.md`
+
+### 1.6 Verification
+- [ ] End-to-end happy path: upload a benign cat photo → `APPROVED`
+- [ ] End-to-end flag path: upload a known borderline test image → `FLAGGED`
+- [ ] End-to-end block path: confirm `BLOCKED` triggers (synthetic test using a known violent stock image set)
+- [ ] CloudWatch logs show structured JSON, no PII, no full base64 image bytes
+
+**Exit criteria:** A teammate can `git clone`, `terraform apply`, open `localhost:8080`, and see the full pipeline work without you helping.
+
+---
+
+## Phase 2 — Admin Dashboard
+
+Goal: administrators can review what got flagged or blocked, approve/reject manually, and see trends.
+
+### 2.1 Backend additions
+- [ ] New API Gateway routes (admin namespace):
+  - `GET /admin/moderation` — list with filters (`status`, date range, limit)
+  - `POST /admin/moderation/{imageKey}/decision` — manual override (approve / reject)
+- [ ] DynamoDB GSI: `status-timestamp-index` for cheap status-filtered queries
+- [ ] New Lambdas: `cm-list-moderation`, `cm-decide-moderation`
+- [ ] Add `manualDecision` and `decidedBy` fields to the table; `process-image` never overwrites them
+
+### 2.2 Auth (minimum viable)
+- [ ] Amazon Cognito user pool with one admin group
+- [ ] API Gateway JWT authorizer on `/admin/*` routes only
+- [ ] Login screen on the dashboard
+
+### 2.3 Dashboard UI (still vanilla JS, separate page)
+- [ ] `/admin/index.html` — login → table view
+- [ ] Filter chips: All / Flagged / Blocked / Approved
+- [ ] Image preview on row click (presigned GET URL, short expiry)
+- [ ] Approve / Reject buttons → calls decision endpoint, updates row
+- [ ] CSV export of current filter
+
+### 2.4 Verification
+- [ ] An admin can log in, see a flagged image, approve it, and that decision persists
+- [ ] A non-admin cannot reach `/admin/*` endpoints
+
+**Exit criteria:** A reviewer can clear the flagged queue end-to-end without touching the AWS console.
+
+---
+
+## Phase 3 — Hardening & Polish
+
+Optional but valuable; pick from this list once Phases 1–2 are done.
+
+- [ ] Rate limiting per IP at API Gateway (usage plans / WAF)
+- [ ] CloudFront in front of S3 for moderated-asset delivery (with signed URLs)
+- [ ] Admin notifications: SNS topic on `BLOCKED` → email/Slack
+- [ ] DynamoDB TTL — auto-expire rows after 90 days
+- [ ] CloudWatch dashboard: uploads/min, % flagged, Rekognition latency, Lambda errors
+- [x] CI/CD: GitHub Actions running `ruff`, `pytest`, `terraform fmt -check`, `terraform validate` on PRs
+- [ ] Custom domain via Route 53 + ACM cert
+- [ ] Multi-region? (Probably no — defer until there's actual traffic.)
+
+---
+
+## Out of Scope (explicit non-goals)
+
+So we don't get tempted:
+
+- Video moderation
+- User-facing accounts or upload history
+- Custom-trained models — Rekognition is the moderation engine, full stop
+- Mobile app
+- Real-time streaming
+- Multi-tenant / organization support
+
+---
+
+*Last updated: 2026-05-06*
