@@ -6,9 +6,8 @@ from unittest.mock import patch
 import boto3
 import pytest
 from botocore.exceptions import ClientError
-from moto import mock_aws
-
 from conftest import s3_event
+from moto import mock_aws
 
 _PROCESS_IMAGE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "lambdas", "process_image")
@@ -85,9 +84,7 @@ def test_blocked_image_written_to_dynamodb():
 
     with patch.object(_handler_mod, "rekognition_client") as mock_rek:
         mock_rek.detect_moderation_labels.return_value = {
-            "ModerationLabels": [
-                {"Name": "Violence", "Confidence": 95.0, "ParentName": "Violence"}
-            ]
+            "ModerationLabels": [{"Name": "Violence", "Confidence": 95.0, "ParentName": "Violence"}]
         }
         lambda_handler(s3_event(BUCKET, "uploads/block.jpg"), None)
 

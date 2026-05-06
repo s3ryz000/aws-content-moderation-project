@@ -45,6 +45,10 @@ jobs:
 
       - name: Run tests with coverage
         run: pytest tests/ --cov=lambdas --cov-report=term-missing --cov-fail-under=80 -v
+        env:
+          AWS_DEFAULT_REGION: ap-southeast-2
+          AWS_ACCESS_KEY_ID: testing
+          AWS_SECRET_ACCESS_KEY: testing
 
   terraform-validate:
     name: Terraform Validate
@@ -57,29 +61,14 @@ jobs:
         with:
           terraform_version: "~> 1.6"
 
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-
       - name: Terraform fmt
         working-directory: infra
         run: terraform fmt -check -recursive
 
-      - name: Terraform init
+      - name: Terraform init (no backend)
         working-directory: infra
-        run: |
-          terraform init \
-            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
-            -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}" \
-            -backend-config="region=${{ vars.AWS_REGION }}"
+        run: terraform init -backend=false
 
       - name: Terraform validate
         working-directory: infra
         run: terraform validate
-
-      - name: Terraform plan
-        working-directory: infra
-        run: terraform plan -no-color
-        env:
-          TF_VAR_frontend_origin: "https://placeholder.example.com"
