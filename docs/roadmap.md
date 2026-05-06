@@ -99,12 +99,12 @@ Goal: a user on `localhost:8080` can drag in an image, see it upload, and within
 Goal: administrators can review what got flagged or blocked, approve/reject manually, and see trends.
 
 ### 2.1 Backend additions
-- [ ] New API Gateway routes (admin namespace):
-  - `GET /admin/moderation` — list with filters (`status`, date range, limit)
+- [x] New API Gateway routes (admin namespace):
+  - `GET /admin/moderation` — list with optional `status` filter and `limit` cap (default 100)
   - `POST /admin/moderation/{imageKey}/decision` — manual override (approve / reject)
-- [ ] DynamoDB GSI: `status-timestamp-index` for cheap status-filtered queries
-- [ ] New Lambdas: `cm-list-moderation`, `cm-decide-moderation`
-- [ ] Add `manualDecision` and `decidedBy` fields to the table; `process-image` never overwrites them
+- [x] DynamoDB GSI: `status-timestamp-index` for cheap status-filtered queries
+- [x] New Lambdas: `cm-list-moderation`, `cm-decide-moderation`
+- [x] `manualDecision`, `decidedBy`, `decisionTimestamp` fields; `process-image` never overwrites them
 
 ### 2.2 Auth (minimum viable)
 - [ ] Amazon Cognito user pool with one admin group
@@ -154,4 +154,4 @@ So we don't get tempted:
 
 ---
 
-*Last updated: 2026-05-06*
+*Last updated: 2026-05-07*

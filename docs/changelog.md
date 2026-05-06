@@ -12,6 +12,25 @@ Sections to use under each release: `Added`, `Changed`, `Deprecated`, `Removed`,
 
 ---
 
+## [0.6.0] — 2026-05-07
+
+### Added
+- `lambdas/list_moderation/handler.py` — `GET /admin/moderation` Lambda; optional `status` filter (APPROVED/FLAGGED/BLOCKED), `limit` cap (default 100, max 500); queries `status-timestamp-index` GSI; returns `{ items, count }` sorted by timestamp descending
+- `lambdas/decide_moderation/handler.py` — `POST /admin/moderation/{imageKey}/decision` Lambda; records `manualDecision` (APPROVED/REJECTED), `decidedBy="admin"`, `decisionTimestamp`; never overwrites original `status`
+- `tests/test_list_moderation.py` — 8 unit tests (moto)
+- `tests/test_decide_moderation.py` — 9 unit tests (moto)
+
+### Infra
+- `infra/dynamodb.tf` — added `status-timestamp-index` GSI (PK: status, SK: timestamp, projection: ALL)
+- `infra/iam.tf` — two new least-privilege IAM roles (`cm-list-moderation-role`, `cm-decide-moderation-role`)
+- `infra/lambda.tf` — two new Python 3.12 Lambda functions
+- `infra/api_gateway.tf` — two new routes, integrations, and Lambda permissions on existing HTTP API
+
+### Changed
+- `tests/conftest.py` — added `path_params` kwarg to `apigw_event` helper
+
+---
+
 ## [0.5.0] — 2026-05-07
 
 ### Verified
