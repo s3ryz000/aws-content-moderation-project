@@ -42,16 +42,16 @@ Required before any `aws_lambda_function` Terraform resource can be deployed.
 Goal: a user on `localhost:8080` can drag in an image, see it upload, and within seconds see `APPROVED`, `FLAGGED`, or `BLOCKED`. No admin dashboard, no auth, no polish.
 
 ### 1.1 Infrastructure (Terraform)
-- [ ] S3 bucket — private, versioning on, server-side encryption (SSE-S3)
-- [ ] DynamoDB table `image-moderation-results` — on-demand, PK `imageKey`
-- [ ] IAM roles & policies — one per Lambda, least-privilege
-- [ ] Three Lambda functions (Python 3.12, 256 MB, 10 s timeout for HTTP, 30 s for `process-image`)
-- [ ] API Gateway HTTP API with two routes:
-  - `POST /upload-url` → `cm-get-upload-url`
-  - `GET /get-moderation-result` → `cm-get-moderation-result`
-- [ ] S3 → `cm-process-image` event notification (`s3:ObjectCreated:*`)
-- [ ] CORS on API Gateway for `http://localhost:8080`
-- [ ] Terraform outputs: API base URL, bucket name
+- [x] S3 bucket — private, versioning on, server-side encryption (SSE-S3)
+- [x] DynamoDB table `image-moderation-results` — on-demand, PK `imageKey`
+- [x] IAM roles & policies — one per Lambda, least-privilege
+- [x] Three Lambda functions (Python 3.12, 256 MB, 10 s timeout for HTTP, 30 s for `process-image`)
+- [x] API Gateway HTTP API with two routes:
+  - [x] `POST /upload-url` → `cm-get-upload-url`
+  - [x] `GET /get-moderation-result` → `cm-get-moderation-result`
+- [x] S3 → `cm-process-image` event notification (`s3:ObjectCreated:*`)
+- [x] CORS on API Gateway for `http://localhost:8080`
+- [x] Terraform outputs: API base URL, bucket name
 
 ### 1.2 Lambda — `cm-get-upload-url`
 - [ ] Validate body: `filename` (string) and `contentType` (allowlist of 4 MIME types)

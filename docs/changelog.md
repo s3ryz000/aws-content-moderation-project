@@ -12,6 +12,22 @@ Sections to use under each release: `Added`, `Changed`, `Deprecated`, `Removed`,
 
 ---
 
+## [0.3.0] — 2026-05-07
+
+### Added
+- `infra/s3.tf` — private S3 content bucket with versioning, SSE-S3, public-access block, and CORS for presigned PUT uploads
+- `infra/dynamodb.tf` — `image-moderation-results` DynamoDB table (on-demand, PK `imageKey`)
+- `infra/iam.tf` — three least-privilege IAM roles (`cm-get-upload-url-role`, `cm-process-image-role`, `cm-get-moderation-result-role`) with inline policies and CloudWatch Logs attachment
+- `infra/lambda.tf` — three Python 3.12 Lambda functions packaged via `archive_file`; S3 event notification (`s3:ObjectCreated:*` on `uploads/`) wired to `cm-process-image`
+- `infra/api_gateway.tf` — HTTP API (`cm-api`) with `POST /upload-url` and `GET /get-moderation-result` routes, `$default` stage with auto-deploy, CORS for `http://localhost:8080`
+- `infra/outputs.tf` — `api_base_url`, `content_bucket`, `dynamodb_table_name`, `aws_region`
+- `dist/.gitkeep` — tracks the `dist/` directory where Terraform writes Lambda zips
+
+### Changed
+- `infra/backend.tf` — added `required_providers` block pinning `hashicorp/aws ~> 5.0` and `hashicorp/archive ~> 2.0`
+
+---
+
 ## [0.2.0] — 2026-05-06
 
 ### Added
