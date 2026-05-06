@@ -51,7 +51,7 @@ resource "aws_apigatewayv2_route" "get_moderation_result" {
 # ── Lambda permissions ────────────────────────────────────────────────────────
 
 resource "aws_lambda_permission" "apigw_get_upload_url" {
-  statement_id  = "AllowAPIGatewayInvoke"
+  statement_id  = "AllowAPIGatewayInvokeGetUploadUrl"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.get_upload_url.function_name
   principal     = "apigateway.amazonaws.com"
@@ -59,7 +59,7 @@ resource "aws_lambda_permission" "apigw_get_upload_url" {
 }
 
 resource "aws_lambda_permission" "apigw_get_moderation_result" {
-  statement_id  = "AllowAPIGatewayInvoke"
+  statement_id  = "AllowAPIGatewayInvokeGetModerationResult"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.get_moderation_result.function_name
   principal     = "apigateway.amazonaws.com"
