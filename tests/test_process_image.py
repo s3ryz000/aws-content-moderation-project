@@ -84,9 +84,7 @@ def test_blocked_image_written_to_dynamodb():
 
     with patch.object(_handler_mod, "rekognition_client") as mock_rek:
         mock_rek.detect_moderation_labels.return_value = {
-            "ModerationLabels": [
-                {"Name": "Violence", "Confidence": 95.0, "ParentName": "Violence"}
-            ]
+            "ModerationLabels": [{"Name": "Violence", "Confidence": 95.0, "ParentName": "Violence"}]
         }
         lambda_handler(s3_event(BUCKET, "uploads/block.jpg"), None)
 
