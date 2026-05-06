@@ -12,6 +12,14 @@ Sections to use under each release: `Added`, `Changed`, `Deprecated`, `Removed`,
 
 ---
 
+## [0.5.0] — 2026-05-07
+
+### Verified
+- End-to-end happy path confirmed: image uploaded via `frontend/` → presigned S3 PUT → Rekognition scan → `APPROVED` result displayed in browser
+- Full pipeline working: API Gateway → Lambda → S3 → process-image Lambda → DynamoDB → get-moderation-result Lambda → frontend
+
+---
+
 ## [0.3.0] — 2026-05-07
 
 ### Added
