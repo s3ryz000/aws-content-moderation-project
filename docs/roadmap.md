@@ -54,25 +54,25 @@ Goal: a user on `localhost:8080` can drag in an image, see it upload, and within
 - [x] Terraform outputs: API base URL, bucket name
 
 ### 1.2 Lambda — `cm-get-upload-url`
-- [ ] Validate body: `filename` (string) and `contentType` (allowlist of 4 MIME types)
-- [ ] Generate UUID-based `imageKey` (`uploads/{uuid}.{ext}`)
-- [ ] Return presigned PutObject URL, 300 s expiry, content-type-locked
-- [ ] Unit tests for the allowlist and key generation
+- [x] Validate body: `filename` (string) and `contentType` (allowlist of 4 MIME types)
+- [x] Generate UUID-based `imageKey` (`uploads/{uuid}.{ext}`)
+- [x] Return presigned PutObject URL, 300 s expiry, content-type-locked
+- [x] Unit tests for the allowlist and key generation
 
 ### 1.3 Lambda — `cm-process-image`
-- [ ] Parse S3 event, extract `bucketName` + `imageKey`
-- [ ] Call `rekognition.detect_moderation_labels` with `MinConfidence=50`
-- [ ] Apply status logic from `claude.md §5`
-- [ ] Write `{imageKey, bucketName, status, moderationLabels, timestamp}` to DynamoDB
-- [ ] Idempotent: re-running on the same key overwrites cleanly
-- [ ] Unit tests for the status decision function (no AWS calls in those tests)
+- [x] Parse S3 event, extract `bucketName` + `imageKey`
+- [x] Call `rekognition.detect_moderation_labels` with `MinConfidence=50`
+- [x] Apply status logic from `claude.md §5`
+- [x] Write `{imageKey, bucketName, status, moderationLabels, timestamp}` to DynamoDB
+- [x] Idempotent: re-running on the same key overwrites cleanly
+- [x] Unit tests for the status decision function (no AWS calls in those tests)
 
 ### 1.4 Lambda — `cm-get-moderation-result`
-- [ ] Validate query string: `imageKey` required, length-bounded
-- [ ] DynamoDB `GetItem` by `imageKey`
-- [ ] Return `404` shape if not found yet (frontend interprets as "still processing")
-- [ ] Return JSON: `{ status, moderationLabels, timestamp }`
-- [ ] Unit tests for the not-found path and happy path
+- [x] Validate query string: `imageKey` required, length-bounded
+- [x] DynamoDB `GetItem` by `imageKey`
+- [x] Return `404` shape if not found yet (frontend interprets as "still processing")
+- [x] Return JSON: `{ status, moderationLabels, timestamp }`
+- [x] Unit tests for the not-found path and happy path
 
 ### 1.5 Frontend (Vanilla JS)
 - [ ] `index.html` — file input, image preview, status chip, label list
