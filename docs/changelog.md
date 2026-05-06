@@ -48,6 +48,22 @@ Sections to use under each release: `Added`, `Changed`, `Deprecated`, `Removed`,
 
 ---
 
+## [0.4.0] — 2026-05-07
+
+### Added
+- `frontend/index.html` — upload card with drag-and-drop, image preview, progress bar markup, and result card; wired to `app.js` and `styles.css`
+- `frontend/styles.css` — full UI styles including new BLOCKED orange CSS variables (`--orange`, `--orange-bg`, `--orange-border`), `.result-badge.blocked`, `.step-icon.blocked`, `.step-status.blocked`, and progress bar rules
+- `frontend/app.js` — XHR-based S3 upload with real-time progress bar; 20 × 1500 ms result polling; three-status `showResult()` (APPROVED green, FLAGGED red, BLOCKED orange)
+
+### Changed
+- File size limit raised from 5 MB to 10 MB
+- Polling parameters: 10 × 2000 ms → 20 × 1500 ms (30 s total max wait)
+- Response field corrected: `data.key` → `data.imageKey`
+- API base URL updated to live endpoint: `https://92oypqmlm2.execute-api.ap-southeast-2.amazonaws.com`
+- Server status ping updated to new base URL and correct route
+
+---
+
 ## [0.3.0] — 2026-05-07
 
 ### Added

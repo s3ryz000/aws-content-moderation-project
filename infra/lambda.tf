@@ -121,6 +121,7 @@ resource "aws_lambda_function" "decide_moderation" {
   }
 }
 
+
 # ── S3 event notification ─────────────────────────────────────────────────────
 
 resource "aws_lambda_permission" "allow_s3" {
