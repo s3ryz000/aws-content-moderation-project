@@ -12,6 +12,22 @@ Sections to use under each release: `Added`, `Changed`, `Deprecated`, `Removed`,
 
 ---
 
+## [0.8.0] — 2026-05-08
+
+### Added
+- `infra/cognito.tf` — Cognito user pool (`cm-admin-pool`), public app client (`cm-admin-client`), hosted UI domain; admin-only user creation enforced
+- `scripts/create-admin.ps1` — provisions the first Cognito admin user via AWS CLI; reads pool ID from `terraform output`
+- `frontend/admin/auth.js` — PKCE code verifier/challenge generation (`crypto.subtle`), token storage in `localStorage`, `getToken()` / `getAuthHeader()` / `redirectToLogin()` / `logout()`
+- `frontend/admin/callback.html` + `callback.js` — receives Cognito redirect, exchanges auth code for tokens via PKCE, stores them, redirects to `index.html`
+
+### Changed
+- `infra/api_gateway.tf` — JWT authorizer (`cm-cognito-authorizer`) added; `GET /admin/moderation` and `POST /admin/moderation/{imageKey}/decision` now require a valid Cognito token; `Authorization` added to CORS `allow_headers`
+- `infra/outputs.tf` — added `cognito_user_pool_id`, `cognito_client_id`, `cognito_domain`
+- `frontend/admin/index.html` — loads `auth.js` before `admin.js`; Sign out button added to navbar
+- `frontend/admin/admin.js` — `init()` redirects to Cognito Hosted UI if no valid token; all admin API calls include `Authorization: Bearer` header; 401 responses trigger `logout()`
+
+---
+
 ## [0.7.0] — 2026-05-07
 
 ### Added

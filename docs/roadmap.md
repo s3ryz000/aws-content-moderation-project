@@ -107,9 +107,9 @@ Goal: administrators can review what got flagged or blocked, approve/reject manu
 - [x] `manualDecision`, `decidedBy`, `decisionTimestamp` fields; `process-image` never overwrites them
 
 ### 2.2 Auth (minimum viable)
-- [ ] Amazon Cognito user pool with one admin group
-- [ ] API Gateway JWT authorizer on `/admin/*` routes only
-- [ ] Login screen on the dashboard
+- [x] Amazon Cognito user pool with one admin group
+- [x] API Gateway JWT authorizer on `/admin/*` routes only
+- [x] Login screen on the dashboard (Cognito Hosted UI with PKCE)
 
 ### 2.3 Dashboard UI (still vanilla JS, separate page)
 - [-] Login screen — removed from scope (no auth in MVP)
