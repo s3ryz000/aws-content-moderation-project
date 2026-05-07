@@ -4,6 +4,8 @@ var currentStatus = '';
 var currentRows   = [];
 
 function init() {
+    var token = getToken();
+    if (!token) { redirectToLogin(); return; }
     loadResults();
 }
 
@@ -30,12 +32,14 @@ function loadResults() {
     hideError();
     setTableBody('<tr><td colspan="5" class="loading-state">Loading…</td></tr>');
 
-    fetch(url)
+    fetch(url, { headers: getAuthHeader() })
         .then(function(resp) {
+            if (resp.status === 401) { logout(); return null; }
             if (!resp.ok) { throw new Error('HTTP ' + resp.status); }
             return resp.json();
         })
         .then(function(data) {
+            if (!data) { return; }
             currentRows = data.items || [];
             renderTable(currentRows);
         })
@@ -82,17 +86,23 @@ function recordDecision(imageKey, decision, buttonEl) {
     var buttons    = actionCell.querySelectorAll('button');
     buttons.forEach(function(b) { b.disabled = true; });
 
-    var encoded = encodeURIComponent(imageKey);
+    var encoded    = encodeURIComponent(imageKey);
+    var authHeader = getAuthHeader();
     fetch(API_BASE + '/admin/moderation/' + encoded + '/decision', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type':  'application/json',
+            'Authorization': authHeader['Authorization']
+        },
         body: JSON.stringify({ decision: decision })
     })
         .then(function(resp) {
+            if (resp.status === 401) { logout(); return null; }
             if (!resp.ok) { throw new Error('HTTP ' + resp.status); }
             return resp.json();
         })
         .then(function(data) {
+            if (!data) { return; }
             var cells = row.querySelectorAll('td');
             cells[3].className   = 'decision-cell decided';
             cells[3].textContent = data.manualDecision;
