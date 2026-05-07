@@ -1,145 +1,134 @@
-# ☁️ AWS Content Moderation Prototype
+# AWS Content Moderation System
 
-A local prototype/demo for a future AWS-powered image content moderation system.  
-**No cloud services are connected** — this is a fully local simulation.
+An image content moderation pipeline built on AWS. Users upload images via a web frontend; Amazon Rekognition scans them; the result (APPROVED / FLAGGED / BLOCKED) is stored in DynamoDB and displayed in the browser. Administrators can review flagged content and record manual decisions through a protected dashboard.
+
+**Region:** `ap-southeast-2` (Sydney)
 
 ---
 
-## 📁 Project Structure
+## Architecture
+
+```
+Browser → POST /upload-url → Lambda: get-upload-url → presigned S3 PUT URL
+Browser → PUT image → S3 → s3:ObjectCreated → Lambda: process-image → Rekognition → DynamoDB
+Browser → GET /get-moderation-result → Lambda: get-moderation-result → DynamoDB
+
+Admin browser → Cognito Hosted UI login → JWT token
+Admin browser → GET /admin/moderation → Lambda: list-moderation → DynamoDB (GSI)
+Admin browser → POST /admin/moderation/{key}/decision → Lambda: decide-moderation → DynamoDB
+```
+
+---
+
+## Tech Stack
+
+| Layer       | Choice                                      |
+|-------------|---------------------------------------------|
+| Frontend    | Vanilla HTML / CSS / JS (no framework)      |
+| API         | Amazon API Gateway (HTTP API)               |
+| Compute     | AWS Lambda — Python 3.12                    |
+| Moderation  | Amazon Rekognition `DetectModerationLabels` |
+| Storage     | Amazon S3 (private, presigned-URL uploads)  |
+| Database    | Amazon DynamoDB (on-demand)                 |
+| Auth        | Amazon Cognito (Hosted UI, PKCE, JWT)       |
+| IaC         | Terraform                                   |
+| CI          | GitHub Actions (lint + test + tf-validate)  |
+
+---
+
+## Prerequisites
+
+- [AWS CLI v2](https://awscli.amazonaws.com/AWSCLIV2.msi)
+- [Terraform ≥ 1.6](https://developer.hashicorp.com/terraform/install)
+- Python 3.12
+- An AWS account with an IAM user that has PowerUserAccess + IAMFullAccess
+
+---
+
+## Setup
+
+### 1 — Configure AWS profile
+
+```powershell
+aws configure --profile content-moderation
+# Region:  ap-southeast-2
+# Output:  json
+```
+
+### 2 — Bootstrap state backend (one-time)
+
+```powershell
+.\scripts\aws-bootstrap.ps1
+```
+
+Creates the S3 upload bucket, Terraform remote state bucket, and DynamoDB lock table.
+
+### 3 — Deploy infrastructure
+
+```powershell
+cd infra
+terraform init
+terraform apply
+```
+
+### 4 — Create the admin user
+
+```powershell
+.\scripts\create-admin.ps1 -Username admin -Email you@example.com -TempPassword Temp1234!
+```
+
+Cognito forces a password change on first login.
+
+---
+
+## Running locally
+
+```powershell
+python -m http.server 8080
+```
+
+| Page | URL |
+|------|-----|
+| Upload | `http://localhost:8080/frontend/` |
+| Admin dashboard | `http://localhost:8080/frontend/admin/` |
+
+The admin dashboard redirects to Cognito's login page automatically.
+
+---
+
+## Development
+
+```powershell
+# Install dev dependencies
+pip install -r requirements-dev.txt
+
+# Run tests
+pytest tests/ -q
+
+# Lint
+ruff check lambdas/
+```
+
+---
+
+## Project Structure
 
 ```
 aws-content-moderation-project/
-│
-├── lambda/
-│   ├── get-upload-url.js          ← Generates presigned S3 upload URL
-│   ├── process-image.js          ← Triggered by S3, runs Rekognition scan
-│   └── get-moderation-result.js  ← Fetches result from DynamoDB
-│
-├── src/
-│   ├── Main.java                 ← Entry point, starts local Java server
-│   ├── UploadServer.java         ← Simple HTTP server (serves frontend + /status)
-│   ├── Main.class                ← Compiled Java file
-│   ├── UploadServer.class        ← Compiled server class
-│   ├── UploadServer$StaticFileHandler.class
-│   └── UploadServer$StatusHandler.class
-│
-├── out/
-│   ├── Main.class
-│   ├── UploadServer.class
-│   ├── UploadServer$StaticFileHandler.class
-│   └── UploadServer$StatusHandler.class
-│   ← Compiled output directory
-│
-├── web/
-│   ├── index.html                ← Main UI (upload form, preview, results)
-│   ├── script.js                 ← Frontend logic (upload + polling)
-│   └── style.css                 ← Styling
-│
-├── LICENSE
-└── README.md
+├── frontend/
+│   ├── index.html / app.js / styles.css     ← Upload page
+│   └── admin/
+│       ├── index.html / admin.js / admin.css ← Admin dashboard
+│       ├── auth.js                            ← PKCE token management
+│       └── callback.html / callback.js        ← Cognito redirect handler
+├── lambdas/
+│   ├── get_upload_url/    ← Presigned S3 PUT URL
+│   ├── process_image/     ← Rekognition scan → DynamoDB write
+│   ├── get_moderation_result/ ← Poll result by imageKey
+│   ├── list_moderation/   ← Admin: list with status filter
+│   └── decide_moderation/ ← Admin: record manual decision
+├── infra/                 ← Terraform (S3, DynamoDB, Lambda, API GW, Cognito, IAM)
+├── tests/                 ← pytest unit tests (56 tests, moto for AWS mocking)
+├── scripts/               ← Bootstrap + admin user creation
+└── docs/                  ← Architecture, roadmap, changelog, specs, plans
 ```
-
----
-
-## 🚀 How to Run
-
-### Prerequisites
-
-- **Java JDK** (version 8 or newer) installed on your machine
-- A terminal (Command Prompt, Terminal, or PowerShell)
-
-### Step 1 — Compile
-
-Open a terminal, navigate to the project folder, and compile:
-
-```bash
-cd /path/to/CCFINAL
-javac -d out src/UploadServer.java src/Main.java
-```
-
-This creates compiled `.class` files inside the `out/` folder.
-
-### Step 2 — Run the Server
-
-```bash
-java -cp out Main
-```
-
-You should see:
-
-```
-===========================================
-  AWS Content Moderation Prototype Server
-===========================================
-  Server running on: http://localhost:8080
-  Status endpoint:   http://localhost:8080/status
-===========================================
-```
-
-### Step 3 — Open in Browser
-
-Go to: **http://localhost:8080**
-
-### Step 4 — Stop the Server
-
-Press `Ctrl+C` in the terminal.
-
----
-
-## 🧪 How It Works
-
-1. User opens the page in a browser
-2. Selects an image file (JPG, PNG, GIF, or WEBP — max 5 MB)
-3. The image is previewed on-screen
-4. User clicks Upload Image
-5. The frontend sends a request to API Gateway to get a presigned upload URL
-6. The image is uploaded directly to Amazon S3 using that URL
-7. Once uploaded:
-      - S3 automatically triggers a Lambda function
-      - The Lambda sends the image to Amazon Rekognition for moderation
-8. Rekognition analyzes the image and returns moderation labels
-9. The result is stored in DynamoDB
-10. The frontend continuously polls the backend for results
-11. Once available, the system displays:
-      - Uploaded to S3
-      - Scanned by Rekognition
-      - Moderation result (APPROVED / FLAGGED / BLOCKED)
-      - Detected moderation labels
-
----
-
-## ⚙️ Tech Stack
-
-| Layer       | Technology            |
-| ----------- | --------------------- |
-| Frontend    | HTML, CSS, JavaScript |
-| Backend     | AWS Lambda (Node.js)  |
-| API         | Amazon API Gateway    |
-| Storage     | Amazon S3             |
-| AI          | Amazon Rekognition    |
-| Database    | Amazon DynamoDB       |
-| Auth/Access | AWS IAM               |
-
-
----
-
-## ❌ What This Project Does NOT Include
-
-- User authentication or login system
-- Role-based access control for admins
-- Image deletion or lifecycle management
-- Advanced moderation tuning (confidence thresholds not customized)
-- Production-grade UI/UX
-
----
-
-## 📌 Notes
-
-- Images are uploaded directly to S3 using presigned URLs (no backend file handling)
-- The moderation process is asynchronous, so the frontend uses polling to fetch results
-- If no result is returned immediately, the system retries multiple times before showing an error
-- API Gateway handles all client-to-backend communication
-- IAM roles control permissions for:
-  - S3 upload
-  - Rekognition scan
-  - DynamoDB read/write

@@ -120,8 +120,8 @@ Goal: administrators can review what got flagged or blocked, approve/reject manu
 - [x] CSV export of current filter
 
 ### 2.4 Verification
-- [ ] An admin can log in, see a flagged image, approve it, and that decision persists
-- [ ] A non-admin cannot reach `/admin/*` endpoints
+- [x] An admin can log in, see a flagged image, approve it, and that decision persists
+- [x] A non-admin cannot reach `/admin/*` endpoints (JWT authorizer returns 401)
 
 **Exit criteria:** A reviewer can clear the flagged queue end-to-end without touching the AWS console.
 
@@ -155,4 +155,4 @@ So we don't get tempted:
 
 ---
 
-*Last updated: 2026-05-07 (Phase 2.3)*
+*Last updated: 2026-05-08 (Phase 2 complete)*
