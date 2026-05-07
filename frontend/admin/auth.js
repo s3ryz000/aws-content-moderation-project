@@ -1,6 +1,6 @@
 /* Auth config — fill in after terraform apply (Task 7) */
-var COGNITO_DOMAIN = 'REPLACE_WITH_COGNITO_DOMAIN';
-var CLIENT_ID      = 'REPLACE_WITH_CLIENT_ID';
+var COGNITO_DOMAIN = 'https://cm-admin-737710549268.auth.ap-southeast-2.amazoncognito.com';
+var CLIENT_ID      = 'r2c11ei4tnj19uo5cpe0mavkg';
 var REDIRECT_URI   = 'http://localhost:8080/frontend/admin/callback.html';
 
 function getToken() {
