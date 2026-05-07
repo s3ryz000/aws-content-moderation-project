@@ -1,0 +1,201 @@
+/* ================================================
+   Content Moderation — Admin UI
+   ================================================ */
+
+:root {
+    --bg:            #ECF0F8;
+    --surface:       #FFFFFF;
+    --primary:       #2563EB;
+    --text:          #111827;
+    --text-2:        #374151;
+    --text-3:        #6B7280;
+    --text-4:        #9CA3AF;
+    --border:        #E5E7EB;
+    --green:         #16A34A;
+    --green-bg:      #F0FDF4;
+    --green-border:  #BBF7D0;
+    --red:           #DC2626;
+    --red-bg:        #FEF2F2;
+    --red-border:    #FECACA;
+    --orange:        #c2410c;
+    --orange-bg:     #fff7ed;
+    --orange-border: #fed7aa;
+    --shadow:        0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.07);
+    --radius:        14px;
+    --radius-sm:     8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ---- NAVBAR ---- */
+.navbar {
+    height: 56px;
+    background: #0F172A;
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid #1E293B;
+}
+.navbar-brand { display: flex; align-items: center; gap: 12px; }
+.navbar-logo {
+    width: 32px; height: 32px;
+    background: var(--primary);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
+}
+.navbar-name { color: #F8FAFC; font-weight: 600; font-size: 15px; display: block; }
+.navbar-sub  { color: #94A3B8; font-size: 11px; display: block; }
+
+/* ---- MAIN ---- */
+.main { flex: 1; padding: 28px; max-width: 1200px; width: 100%; margin: 0 auto; }
+
+.page-header { margin-bottom: 20px; }
+.page-header h1 { font-size: 22px; font-weight: 700; }
+.page-header p  { color: var(--text-3); margin-top: 4px; }
+
+/* ---- TOOLBAR ---- */
+.toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+
+/* ---- FILTER CHIPS ---- */
+.chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.chip:hover { border-color: var(--primary); color: var(--primary); }
+.chip.active-all      { background: var(--primary); border-color: var(--primary); color: #fff; }
+.chip.active-flagged  { background: var(--red);     border-color: var(--red);     color: #fff; }
+.chip.active-blocked  { background: var(--orange);  border-color: var(--orange);  color: #fff; }
+.chip.active-approved { background: var(--green);   border-color: var(--green);   color: #fff; }
+
+/* ---- TOOLBAR BUTTONS ---- */
+.btn {
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.btn:hover { background: var(--bg); }
+.btn-refresh { margin-left: auto; }
+
+/* ---- ERROR BANNER ---- */
+.error-banner {
+    background: var(--red-bg);
+    border: 1px solid var(--red-border);
+    color: var(--red);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    display: none;
+}
+.error-banner.visible { display: block; }
+
+/* ---- TABLE CARD ---- */
+.table-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+.table-wrap { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+thead th {
+    background: #F9FAFB;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    position: sticky;
+    top: 56px;
+}
+
+tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:nth-child(odd)  { background: var(--bg); }
+tbody tr:nth-child(even) { background: var(--surface); }
+tbody tr:hover { background: #EFF6FF; }
+
+tbody td { padding: 10px 14px; vertical-align: middle; }
+
+td.key-cell {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--text-3);
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---- STATUS BADGE ---- */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.badge-approved { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-border); }
+.badge-flagged  { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
+.badge-blocked  { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
+
+/* ---- DECISION CELL ---- */
+td.decision-cell         { color: var(--text-4); font-style: italic; }
+td.decision-cell.decided { color: var(--text-2); font-style: normal; font-weight: 500; }
+
+/* ---- ACTION BUTTONS ---- */
+.action-btns { display: flex; gap: 6px; }
+
+.btn-approve, .btn-reject {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid;
+}
+.btn-approve { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+.btn-approve:hover { background: var(--green); color: #fff; }
+.btn-reject  { background: var(--red-bg);   color: var(--red);   border-color: var(--red-border); }
+.btn-reject:hover  { background: var(--red);   color: #fff; }
+.btn-approve:disabled, .btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---- STATES ---- */
+.empty-state, .loading-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-3);
+}

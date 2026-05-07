@@ -98,3 +98,58 @@ resource "aws_iam_role_policy_attachment" "get_moderation_result_logs" {
   role       = aws_iam_role.get_moderation_result.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
+
+# ── cm-list-moderation ────────────────────────────────────────────────────────
+
+resource "aws_iam_role" "list_moderation" {
+  name               = "cm-list-moderation-role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+}
+
+data "aws_iam_policy_document" "list_moderation" {
+  statement {
+    effect  = "Allow"
+    actions = ["dynamodb:Query"]
+    resources = [
+      aws_dynamodb_table.results.arn,
+      "${aws_dynamodb_table.results.arn}/index/status-timestamp-index",
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "list_moderation" {
+  name   = "cm-list-moderation-policy"
+  role   = aws_iam_role.list_moderation.id
+  policy = data.aws_iam_policy_document.list_moderation.json
+}
+
+resource "aws_iam_role_policy_attachment" "list_moderation_logs" {
+  role       = aws_iam_role.list_moderation.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+# ── cm-decide-moderation ──────────────────────────────────────────────────────
+
+resource "aws_iam_role" "decide_moderation" {
+  name               = "cm-decide-moderation-role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+}
+
+data "aws_iam_policy_document" "decide_moderation" {
+  statement {
+    effect    = "Allow"
+    actions   = ["dynamodb:GetItem", "dynamodb:UpdateItem"]
+    resources = [aws_dynamodb_table.results.arn]
+  }
+}
+
+resource "aws_iam_role_policy" "decide_moderation" {
+  name   = "cm-decide-moderation-policy"
+  role   = aws_iam_role.decide_moderation.id
+  policy = data.aws_iam_policy_document.decide_moderation.json
+}
+
+resource "aws_iam_role_policy_attachment" "decide_moderation_logs" {
+  role       = aws_iam_role.decide_moderation.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}

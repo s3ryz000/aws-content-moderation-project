@@ -12,6 +12,51 @@ Sections to use under each release: `Added`, `Changed`, `Deprecated`, `Removed`,
 
 ---
 
+## [0.8.0] — 2026-05-08
+
+### Added
+- `infra/cognito.tf` — Cognito user pool (`cm-admin-pool`), public app client (`cm-admin-client`), hosted UI domain; admin-only user creation enforced
+- `scripts/create-admin.ps1` — provisions the first Cognito admin user via AWS CLI; reads pool ID from `terraform output`
+- `frontend/admin/auth.js` — PKCE code verifier/challenge generation (`crypto.subtle`), token storage in `localStorage`, `getToken()` / `getAuthHeader()` / `redirectToLogin()` / `logout()`
+- `frontend/admin/callback.html` + `callback.js` — receives Cognito redirect, exchanges auth code for tokens via PKCE, stores them, redirects to `index.html`
+
+### Changed
+- `infra/api_gateway.tf` — JWT authorizer (`cm-cognito-authorizer`) added; `GET /admin/moderation` and `POST /admin/moderation/{imageKey}/decision` now require a valid Cognito token; `Authorization` added to CORS `allow_headers`
+- `infra/outputs.tf` — added `cognito_user_pool_id`, `cognito_client_id`, `cognito_domain`
+- `frontend/admin/index.html` — loads `auth.js` before `admin.js`; Sign out button added to navbar
+- `frontend/admin/admin.js` — `init()` redirects to Cognito Hosted UI if no valid token; all admin API calls include `Authorization: Bearer` header; 401 responses trigger `logout()`
+
+---
+
+## [0.7.0] — 2026-05-07
+
+### Added
+- `frontend/admin/index.html` — admin dashboard at `http://localhost:8080/frontend/admin/`; table view with filter chips (All / Flagged / Blocked / Approved), approve/reject actions, CSV export
+- `frontend/admin/admin.css` — self-contained styles; reuses same CSS tokens as main frontend
+- `frontend/admin/admin.js` — `loadResults()`, `renderTable()`, `recordDecision()`, `exportCSV()`; no framework, no build step
+
+---
+
+## [0.6.0] — 2026-05-07
+
+### Added
+- `lambdas/list_moderation/handler.py` — `GET /admin/moderation` Lambda; optional `status` filter (APPROVED/FLAGGED/BLOCKED), `limit` cap (default 100, max 500); queries `status-timestamp-index` GSI; returns `{ items, count }` sorted by timestamp descending
+- `lambdas/decide_moderation/handler.py` — `POST /admin/moderation/{imageKey}/decision` Lambda; records `manualDecision` (APPROVED/REJECTED), `decidedBy="admin"`, `decisionTimestamp`; never overwrites original `status`
+- `tests/test_list_moderation.py` — 8 unit tests (moto)
+- `tests/test_decide_moderation.py` — 9 unit tests (moto)
+
+### Infra
+- `infra/dynamodb.tf` — added `status-timestamp-index` GSI (PK: status, SK: timestamp, projection: ALL)
+- `infra/iam.tf` — two new least-privilege IAM roles (`cm-list-moderation-role`, `cm-decide-moderation-role`)
+- `infra/lambda.tf` — two new Python 3.12 Lambda functions
+- `infra/api_gateway.tf` — two new routes, integrations, and Lambda permissions on existing HTTP API
+
+### Changed
+- `tests/conftest.py` — added `path_params` kwarg to `apigw_event` helper
+
+---
+
+
 ## [0.5.0] — 2026-05-07
 
 ### Verified
@@ -19,6 +64,23 @@ Sections to use under each release: `Added`, `Changed`, `Deprecated`, `Removed`,
 - Full pipeline working: API Gateway → Lambda → S3 → process-image Lambda → DynamoDB → get-moderation-result Lambda → frontend
 
 ---
+
+## [0.4.0] — 2026-05-07
+
+### Added
+- `frontend/index.html` — upload card with drag-and-drop, image preview, progress bar markup, and result card; wired to `app.js` and `styles.css`
+- `frontend/styles.css` — full UI styles including new BLOCKED orange CSS variables (`--orange`, `--orange-bg`, `--orange-border`), `.result-badge.blocked`, `.step-icon.blocked`, `.step-status.blocked`, and progress bar rules
+- `frontend/app.js` — XHR-based S3 upload with real-time progress bar; 20 × 1500 ms result polling; three-status `showResult()` (APPROVED green, FLAGGED red, BLOCKED orange)
+
+### Changed
+- File size limit raised from 5 MB to 10 MB
+- Polling parameters: 10 × 2000 ms → 20 × 1500 ms (30 s total max wait)
+- Response field corrected: `data.key` → `data.imageKey`
+- API base URL updated to live endpoint: `https://92oypqmlm2.execute-api.ap-southeast-2.amazonaws.com`
+- Server status ping updated to new base URL and correct route
+
+---
+
 
 ## [0.3.0] — 2026-05-07
 

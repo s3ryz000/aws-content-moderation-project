@@ -75,14 +75,14 @@ Goal: a user on `localhost:8080` can drag in an image, see it upload, and within
 - [x] Unit tests for the not-found path and happy path
 
 ### 1.5 Frontend (Vanilla JS)
-- [ ] `index.html` — file input, image preview, status chip, label list
-- [ ] `app.js`:
-  - [ ] Client-side validation (size ≤ 10 MB, MIME in allowlist)
-  - [ ] Request presigned URL → PUT image with progress bar
-  - [ ] Poll `GET /get-moderation-result` every 1.5 s, max 20 attempts, exponential back-off after attempt 10
-  - [ ] Render result with color-coded status (green/amber/red)
-- [ ] `styles.css` — minimal, responsive, no framework
-- [ ] Manual test plan in `docs/test-plan.md`
+- [x] `index.html` — file input, image preview, status chip, label list
+- [x] `app.js`:
+  - [x] Client-side validation (size ≤ 10 MB, MIME in allowlist)
+  - [x] Request presigned URL → PUT image with progress bar
+  - [x] Poll `GET /get-moderation-result` every 1.5 s, max 20 attempts
+  - [x] Render result with color-coded status (green / red / orange)
+- [x] `styles.css` — minimal, responsive, no framework
+- [x] BLOCKED orange state (badge, step icons, step status text)
 
 ### 1.6 Verification
 - [x] End-to-end happy path: uploaded image via frontend → `APPROVED` confirmed
@@ -99,24 +99,25 @@ Goal: a user on `localhost:8080` can drag in an image, see it upload, and within
 Goal: administrators can review what got flagged or blocked, approve/reject manually, and see trends.
 
 ### 2.1 Backend additions
-- [ ] New API Gateway routes (admin namespace):
-  - `GET /admin/moderation` — list with filters (`status`, date range, limit)
+- [x] New API Gateway routes (admin namespace):
+  - `GET /admin/moderation` — list with optional `status` filter and `limit` cap (default 100)
   - `POST /admin/moderation/{imageKey}/decision` — manual override (approve / reject)
-- [ ] DynamoDB GSI: `status-timestamp-index` for cheap status-filtered queries
-- [ ] New Lambdas: `cm-list-moderation`, `cm-decide-moderation`
-- [ ] Add `manualDecision` and `decidedBy` fields to the table; `process-image` never overwrites them
+- [x] DynamoDB GSI: `status-timestamp-index` for cheap status-filtered queries
+- [x] New Lambdas: `cm-list-moderation`, `cm-decide-moderation`
+- [x] `manualDecision`, `decidedBy`, `decisionTimestamp` fields; `process-image` never overwrites them
 
 ### 2.2 Auth (minimum viable)
-- [ ] Amazon Cognito user pool with one admin group
-- [ ] API Gateway JWT authorizer on `/admin/*` routes only
-- [ ] Login screen on the dashboard
+- [x] Amazon Cognito user pool with one admin group
+- [x] API Gateway JWT authorizer on `/admin/*` routes only
+- [x] Login screen on the dashboard (Cognito Hosted UI with PKCE)
 
 ### 2.3 Dashboard UI (still vanilla JS, separate page)
-- [ ] `/admin/index.html` — login → table view
-- [ ] Filter chips: All / Flagged / Blocked / Approved
-- [ ] Image preview on row click (presigned GET URL, short expiry)
-- [ ] Approve / Reject buttons → calls decision endpoint, updates row
-- [ ] CSV export of current filter
+- [-] Login screen — removed from scope (no auth in MVP)
+- [x] `frontend/admin/index.html` — table view at `http://localhost:8080/frontend/admin/`
+- [x] Filter chips: All / Flagged / Blocked / Approved
+- [-] Image preview — removed from scope (bucket is private, no presigned GET endpoint)
+- [x] Approve / Reject buttons → calls decision endpoint, updates row
+- [x] CSV export of current filter
 
 ### 2.4 Verification
 - [ ] An admin can log in, see a flagged image, approve it, and that decision persists
@@ -154,4 +155,4 @@ So we don't get tempted:
 
 ---
 
-*Last updated: 2026-05-06*
+*Last updated: 2026-05-07 (Phase 2.3)*

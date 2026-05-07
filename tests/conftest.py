@@ -36,9 +36,15 @@ def s3_event(bucket: str, key: str) -> dict:
     }
 
 
-def apigw_event(method: str = "GET", qs: dict = None, body: dict = None) -> dict:
+def apigw_event(
+    method: str = "GET",
+    qs: dict = None,
+    body: dict = None,
+    path_params: dict = None,
+) -> dict:
     return {
         "requestContext": {"http": {"method": method}},
         "queryStringParameters": qs,
         "body": json.dumps(body) if body is not None else None,
+        "pathParameters": path_params,
     }

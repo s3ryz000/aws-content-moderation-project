@@ -17,3 +17,18 @@ output "aws_region" {
   description = "AWS region where resources are deployed"
   value       = "ap-southeast-2"
 }
+
+output "cognito_user_pool_id" {
+  description = "Cognito user pool ID"
+  value       = aws_cognito_user_pool.admin.id
+}
+
+output "cognito_client_id" {
+  description = "Cognito app client ID"
+  value       = aws_cognito_user_pool_client.admin.id
+}
+
+output "cognito_domain" {
+  description = "Cognito hosted UI base URL"
+  value       = "https://${aws_cognito_user_pool_domain.admin.domain}.auth.ap-southeast-2.amazoncognito.com"
+}

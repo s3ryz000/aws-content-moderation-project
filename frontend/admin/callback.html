@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signing in&hellip;</title>
+    <link rel="stylesheet" href="admin.css">
+    <style>
+        .callback-wrap { display:flex; align-items:center; justify-content:center; min-height:80vh; }
+        .callback-box  { text-align:center; color:var(--text-2); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="navbar-logo">CM</div>
+            <div>
+                <span class="navbar-name">Content Moderation</span>
+                <span class="navbar-sub">Admin Dashboard</span>
+            </div>
+        </div>
+    </nav>
+    <div class="callback-wrap">
+        <div class="callback-box">
+            <p id="status">Signing you in&hellip;</p>
+        </div>
+    </div>
+    <script src="auth.js"></script>
+    <script src="callback.js"></script>
+</body>
+</html>

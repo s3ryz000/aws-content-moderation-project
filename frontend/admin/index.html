@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Moderation — Admin</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="navbar-logo">CM</div>
+            <div>
+                <span class="navbar-name">Content Moderation</span>
+                <span class="navbar-sub">Admin Dashboard</span>
+            </div>
+        </div>
+        <button class="btn" onclick="logout()" style="margin-left:auto;">Sign out</button>
+    </nav>
+
+    <main class="main">
+
+        <div class="page-header">
+            <h1>Moderation Results</h1>
+            <p>Review and action flagged or blocked content.</p>
+        </div>
+
+        <div class="toolbar">
+            <button class="chip active-all" data-status=""         onclick="setFilter(this, '')">All</button>
+            <button class="chip"            data-status="FLAGGED"  onclick="setFilter(this, 'FLAGGED')">Flagged</button>
+            <button class="chip"            data-status="BLOCKED"  onclick="setFilter(this, 'BLOCKED')">Blocked</button>
+            <button class="chip"            data-status="APPROVED" onclick="setFilter(this, 'APPROVED')">Approved</button>
+            <button class="btn"             onclick="exportCSV()">Export CSV</button>
+            <button class="btn btn-refresh" onclick="loadResults()">&#8635; Refresh</button>
+        </div>
+
+        <div class="error-banner" id="errorBanner"></div>
+
+        <div class="table-card">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image Key</th>
+                            <th>Status</th>
+                            <th>Timestamp</th>
+                            <th>Manual Decision</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="5" class="loading-state">Loading&hellip;</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="auth.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
