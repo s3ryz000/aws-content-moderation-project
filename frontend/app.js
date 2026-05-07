@@ -324,8 +324,7 @@ function uploadToS3(file) {
         xhr.setRequestHeader('Content-Type', file.type);
         xhr.send(file);
     })
-    .catch(function (err) {
-        console.error(err);
+    .catch(function () {
         showError('Upload failed. Please try again.');
         uploadBtn.textContent = 'Upload Image';
         uploadBtn.disabled    = false;

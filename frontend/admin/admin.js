@@ -60,7 +60,7 @@ function renderTable(items) {
         var decisionText  = item.manualDecision || '—';
         var decisionClass = item.manualDecision ? 'decision-cell decided' : 'decision-cell';
         var actionsHtml   = item.manualDecision
-            ? '<span style="color:var(--text-4);font-size:12px;">Decided</span>'
+            ? '<span class="decided-label">Decided</span>'
             : '<div class="action-btns">'
                 + '<button class="btn-approve" onclick="recordDecision(\''
                 + escKey(item.imageKey) + '\', \'APPROVED\', this)">Approve</button>'
@@ -106,7 +106,7 @@ function recordDecision(imageKey, decision, buttonEl) {
             var cells = row.querySelectorAll('td');
             cells[3].className   = 'decision-cell decided';
             cells[3].textContent = data.manualDecision;
-            actionCell.innerHTML = '<span style="color:var(--text-4);font-size:12px;">Decided</span>';
+            actionCell.innerHTML = '<span class="decided-label">Decided</span>';
 
             for (var i = 0; i < currentRows.length; i++) {
                 if (currentRows[i].imageKey === imageKey) {

@@ -175,6 +175,7 @@ td.key-cell {
 /* ---- DECISION CELL ---- */
 td.decision-cell         { color: var(--text-4); font-style: italic; }
 td.decision-cell.decided { color: var(--text-2); font-style: normal; font-weight: 500; }
+.decided-label           { color: var(--text-4); font-size: 12px; }
 
 /* ---- ACTION BUTTONS ---- */
 .action-btns { display: flex; gap: 6px; }
