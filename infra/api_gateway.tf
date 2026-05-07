@@ -7,7 +7,7 @@ resource "aws_apigatewayv2_api" "main" {
   cors_configuration {
     allow_origins = [var.frontend_origin]
     allow_methods = ["POST", "GET", "OPTIONS"]
-    allow_headers = ["Content-Type"]
+    allow_headers = ["Content-Type", "Authorization"]
     max_age       = 300
   }
 }
@@ -16,6 +16,20 @@ resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.main.id
   name        = "$default"
   auto_deploy = true
+}
+
+# ── JWT authorizer ────────────────────────────────────────────────────────────
+
+resource "aws_apigatewayv2_authorizer" "cognito" {
+  api_id           = aws_apigatewayv2_api.main.id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+  name             = "cm-cognito-authorizer"
+
+  jwt_configuration {
+    audience = [aws_cognito_user_pool_client.admin.id]
+    issuer   = "https://cognito-idp.ap-southeast-2.amazonaws.com/${aws_cognito_user_pool.admin.id}"
+  }
 }
 
 # ── Integrations ──────────────────────────────────────────────────────────────
@@ -81,15 +95,19 @@ resource "aws_apigatewayv2_integration" "decide_moderation" {
 }
 
 resource "aws_apigatewayv2_route" "get_admin_moderation" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "GET /admin/moderation"
-  target    = "integrations/${aws_apigatewayv2_integration.list_moderation.id}"
+  api_id             = aws_apigatewayv2_api.main.id
+  route_key          = "GET /admin/moderation"
+  target             = "integrations/${aws_apigatewayv2_integration.list_moderation.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
 }
 
 resource "aws_apigatewayv2_route" "post_admin_decision" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "POST /admin/moderation/{imageKey}/decision"
-  target    = "integrations/${aws_apigatewayv2_integration.decide_moderation.id}"
+  api_id             = aws_apigatewayv2_api.main.id
+  route_key          = "POST /admin/moderation/{imageKey}/decision"
+  target             = "integrations/${aws_apigatewayv2_integration.decide_moderation.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
 }
 
 resource "aws_lambda_permission" "apigw_list_moderation" {
