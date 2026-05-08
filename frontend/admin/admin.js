@@ -53,13 +53,15 @@ function setFilter(chipEl, status) {
 }
 
 // Filter predicates. Source of truth for both the filter view and the chip counts.
-// FLAGGED = auto-flagged AND not yet reviewed; BLOCKED = auto-blocked OR manually rejected;
-// APPROVED = admin approved (regardless of original Rekognition status).
+// Mental model — what each tab means for the platform:
+//   FLAGGED  = needs human review (auto-flagged AND not yet decided)
+//   BLOCKED  = not allowed (auto-blocked OR admin-rejected)
+//   APPROVED = allowed (admin-approved OR auto-approved with no later override)
 function matchesFilter(row, key) {
     if (key === '')         { return true; }
     if (key === 'FLAGGED')  { return row.status === 'FLAGGED' && !row.manualDecision; }
     if (key === 'BLOCKED')  { return row.status === 'BLOCKED' || row.manualDecision === 'REJECTED'; }
-    if (key === 'APPROVED') { return row.manualDecision === 'APPROVED'; }
+    if (key === 'APPROVED') { return row.manualDecision === 'APPROVED' || (row.status === 'APPROVED' && !row.manualDecision); }
     return false;
 }
 
