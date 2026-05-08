@@ -83,9 +83,12 @@ Cognito forces a password change on first login.
 
 ## Running locally
 
-```powershell
-python -m http.server 8080
-```
+| OS          | Command      |
+|-------------|--------------|
+| Linux / Mac | `./run.sh`   |
+| Windows     | `run.bat`    |
+
+Then open <http://localhost:8080>.
 
 | Page | URL |
 |------|-----|

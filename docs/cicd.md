@@ -2,7 +2,7 @@
 
 Two GitHub Actions workflows run against this repo:
 
-- **`ci.yml`** — runs on every PR to `main`: Terraform validate/plan, Java compile, Lambda zip
+- **`ci.yml`** — runs on every PR to `main`: lint (ruff + black) → pytest with coverage, in parallel with Terraform validate
 - **`deploy.yml`** — runs on every push to `main`: Terraform apply, Lambda deploy, S3 sync
 
 Both authenticate to AWS via **GitHub OIDC** — no long-lived credentials stored in GitHub.

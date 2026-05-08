@@ -1,0 +1,180 @@
+/* ================================================
+   Content Moderation — Shared Design System
+   Both pages link to this BEFORE their own sheet.
+   ================================================ */
+
+:root {
+    --bg:            #ECF0F8;
+    --surface:       #FFFFFF;
+    --primary:       #2563EB;
+    --primary-dark:  #1D4ED8;
+    --primary-muted: #DBEAFE;
+    --text:          #111827;
+    --text-2:        #374151;
+    --text-3:        #6B7280;
+    --text-4:        #9CA3AF;
+    --border:        #E5E7EB;
+    --green:         #16A34A;
+    --green-bg:      #F0FDF4;
+    --green-border:  #BBF7D0;
+    --red:           #DC2626;
+    --red-bg:        #FEF2F2;
+    --red-border:    #FECACA;
+    --orange:        #c2410c;
+    --orange-bg:     #fff7ed;
+    --orange-border: #fed7aa;
+    --shadow:        0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.07);
+    --radius:        14px;
+    --radius-sm:     8px;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ---- FOCUS ---- */
+
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+/* ---- NAVBAR ---- */
+
+.navbar {
+    height: 56px;
+    background: #0F172A;
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid #1E293B;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.navbar-logo {
+    width: 34px;
+    height: 34px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+}
+
+.navbar-title {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+}
+
+.navbar-name {
+    color: #F1F5F9;
+    font-size: 14px;
+    font-weight: 600;
+    display: block;
+}
+
+.navbar-sub {
+    color: #64748B;
+    font-size: 11px;
+    display: block;
+}
+
+/* ---- NAV RIGHT / LINKS ---- */
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    color: #94A3B8;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 5px 12px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: #E2E8F0;
+    border-color: #334155;
+    background: #1E293B;
+}
+
+.nav-link[aria-current="page"] {
+    color: #F1F5F9;
+    background: #1E293B;
+    border-color: #334155;
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    color: #94A3B8;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border: 1px solid #2D3748;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    white-space: nowrap;
+    font-family: inherit;
+    line-height: 1;
+}
+
+.nav-btn:hover {
+    color: #E2E8F0;
+    border-color: #334155;
+    background: #1E293B;
+}
+
+/* ---- UTILITY ---- */
+
+.hidden { display: none !important; }
+
+/* ---- RESPONSIVE NAVBAR ---- */
+
+@media (max-width: 640px) {
+    .navbar       { padding: 0 16px; }
+    .navbar-sub   { display: none; }
+    .nav-link     { padding: 5px 8px; font-size: 12px; }
+    .nav-btn      { padding: 5px 8px; font-size: 12px; }
+}

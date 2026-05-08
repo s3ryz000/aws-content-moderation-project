@@ -1,0 +1,27 @@
+# Build output
+out/
+*.class
+dist/*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# Terraform
+infra/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+!*.tfvars.example
+
+# Secrets / local
+.env
+.aws/
+
+# Tooling
+.claude/
+.superpowers/
