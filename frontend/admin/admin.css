@@ -149,8 +149,6 @@ thead th {
     letter-spacing: 0.05em;
     border-bottom: 1px solid var(--border);
     white-space: nowrap;
-    position: sticky;
-    top: 56px;
 }
 
 tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
