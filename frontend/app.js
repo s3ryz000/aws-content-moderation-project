@@ -28,71 +28,73 @@ var ALLOWED_TYPES    = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 var selectedFile = null;
 
 // ---- SERVER STATUS ----
+// 2xx / 4xx → Online (API responded; 404 is expected for ping key)
+// 5xx       → Degraded (API reachable but returning errors)
+// timeout / network error → Offline
 
 function checkServerStatus() {
-    statusPill.className = 'status-pill checking';
-    statusText.textContent = 'Checking...';
+    statusPill.className   = 'status-pill checking';
+    statusText.textContent = 'Checking…';
 
     var controller = new AbortController();
-    var timer = setTimeout(function () { controller.abort(); }, 5000);
+    var timer = setTimeout(function() { controller.abort(); }, 5000);
 
-    fetch(
-        API_BASE + '/get-moderation-result?imageKey=_ping',
-        { signal: controller.signal }
-    )
-    .then(function () {
-        clearTimeout(timer);
-        statusPill.className = 'status-pill';
-        statusText.textContent = 'Online · Prototype Mode';
-    })
-    .catch(function (err) {
-        clearTimeout(timer);
-        if (err.name === 'AbortError') {
-            statusPill.className = 'status-pill offline';
+    fetch(API_BASE + '/get-moderation-result?imageKey=_ping', { signal: controller.signal })
+        .then(function(res) {
+            clearTimeout(timer);
+            if (res.status >= 500) {
+                statusPill.className   = 'status-pill degraded';
+                statusText.textContent = 'Degraded';
+            } else {
+                statusPill.className   = 'status-pill';
+                statusText.textContent = 'Online';
+            }
+        })
+        .catch(function() {
+            clearTimeout(timer);
+            statusPill.className   = 'status-pill offline';
             statusText.textContent = 'Offline';
-        } else {
-            statusPill.className = 'status-pill';
-            statusText.textContent = 'Online · Prototype Mode';
-        }
-    });
+        });
 }
+
 checkServerStatus();
+setInterval(checkServerStatus, 30000);
 
 // ---- DRAG AND DROP ----
 
-dropZone.addEventListener('dragover', function (e) {
+dropZone.addEventListener('dragover', function(e) {
     e.preventDefault();
     dropZone.classList.add('over');
 });
 
-dropZone.addEventListener('dragleave', function (e) {
+dropZone.addEventListener('dragleave', function(e) {
     if (!dropZone.contains(e.relatedTarget)) {
         dropZone.classList.remove('over');
     }
 });
 
-dropZone.addEventListener('drop', function (e) {
+dropZone.addEventListener('drop', function(e) {
     e.preventDefault();
     dropZone.classList.remove('over');
     var file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
+    if (file) { handleFile(file); }
 });
 
 // ---- FILE INPUT ----
 
-fileInput.addEventListener('change', function () {
-    if (this.files[0]) handleFile(this.files[0]);
+fileInput.addEventListener('change', function() {
+    if (this.files[0]) { handleFile(this.files[0]); }
 });
 
 // ---- CLEAR BUTTON ----
 
-clearBtn.addEventListener('click', function (e) {
+clearBtn.addEventListener('click', function(e) {
     e.stopPropagation();
     clearSelection();
 });
 
 function clearSelection() {
-    selectedFile = null;
+    selectedFile    = null;
     fileInput.value = '';
     hidePreview();
     hideError();
@@ -124,7 +126,7 @@ function handleFile(file) {
 
 // ---- UPLOAD BUTTON ----
 
-uploadBtn.addEventListener('click', function () {
+uploadBtn.addEventListener('click', function() {
     var file = fileInput.files[0] || selectedFile;
     if (!file) {
         showError('No file selected. Please choose an image first.');
@@ -135,11 +137,11 @@ uploadBtn.addEventListener('click', function () {
 
 // ---- RESET BUTTON ----
 
-resetBtn.addEventListener('click', function () {
+resetBtn.addEventListener('click', function() {
     clearSelection();
     hideResult();
     uploadBtn.textContent = 'Upload Image';
-    uploadBtn.disabled = true;
+    uploadBtn.disabled    = true;
 });
 
 // ---- SHOW RESULT ----
@@ -173,18 +175,12 @@ function showResult(file, moderationData) {
         stepDefs.push({ icon: 'ok', text: 'Moderation result: ', status: status });
     }
 
-    stepDefs.forEach(function (def) {
+    stepDefs.forEach(function(def) {
         var li = document.createElement('li');
 
         var iconEl = document.createElement('div');
-        iconEl.className = 'step-icon ' + def.icon;
-        if (def.icon === 'ok') {
-            iconEl.textContent = '✓';
-        } else if (def.icon === 'blocked') {
-            iconEl.textContent = '✕';
-        } else {
-            iconEl.textContent = '!';
-        }
+        iconEl.className   = 'step-icon ' + def.icon;
+        iconEl.textContent = def.icon === 'ok' ? '✓' : def.icon === 'blocked' ? '✕' : '!';
 
         var body = document.createElement('div');
         body.className = 'step-body';
@@ -192,16 +188,16 @@ function showResult(file, moderationData) {
         if (def.status) {
             body.appendChild(document.createTextNode(def.text));
             var tag = document.createElement('span');
-            tag.className = 'step-status ' + status.toLowerCase();
+            tag.className   = 'step-status ' + status.toLowerCase();
             tag.textContent = def.status;
             body.appendChild(tag);
         } else if (def.labels) {
             body.appendChild(document.createTextNode(def.text));
             var pills = document.createElement('div');
             pills.className = 'label-pills';
-            def.labels.forEach(function (lbl) {
+            def.labels.forEach(function(lbl) {
                 var pill = document.createElement('span');
-                pill.className = 'label-pill';
+                pill.className   = 'label-pill';
                 pill.textContent = lbl;
                 pills.appendChild(pill);
             });
@@ -223,7 +219,7 @@ function showResult(file, moderationData) {
 
 function showPreview(file) {
     var reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = function(e) {
         previewImage.src       = e.target.result;
         fileNameEl.textContent = file.name;
         fileSizeEl.textContent = formatSize(file.size);
@@ -271,29 +267,29 @@ function formatSize(bytes) {
 
 function uploadToS3(file) {
     uploadBtn.disabled    = true;
-    uploadBtn.textContent = 'Getting upload URL...';
+    uploadBtn.textContent = 'Getting upload URL…';
 
     fetch(API_BASE + '/upload-url', {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: file.name, contentType: file.type })
+        body:    JSON.stringify({ filename: file.name, contentType: file.type })
     })
-    .then(function (res) {
-        if (!res.ok) throw new Error('Failed to get upload URL');
+    .then(function(res) {
+        if (!res.ok) { throw new Error('Failed to get upload URL'); }
         return res.json();
     })
-    .then(function (data) {
+    .then(function(data) {
         var uploadUrl = data.uploadUrl;
         var imageKey  = data.imageKey;
 
         progressWrap.classList.remove('hidden');
         progressBar.style.width   = '0%';
         progressLabel.textContent = '0%';
-        uploadBtn.textContent     = 'Uploading...';
+        uploadBtn.textContent     = 'Uploading…';
 
         var xhr = new XMLHttpRequest();
 
-        xhr.upload.onprogress = function (e) {
+        xhr.upload.onprogress = function(e) {
             if (e.lengthComputable) {
                 var pct = Math.round((e.loaded / e.total) * 100);
                 progressBar.style.width   = pct + '%';
@@ -301,10 +297,10 @@ function uploadToS3(file) {
             }
         };
 
-        xhr.onload = function () {
+        xhr.onload = function() {
             progressWrap.classList.add('hidden');
             if (xhr.status === 200 || xhr.status === 204) {
-                uploadBtn.textContent = 'Scanning image...';
+                uploadBtn.textContent = 'Scanning image…';
                 pollModerationResult(file, imageKey);
             } else {
                 showError('Upload to S3 failed. Please try again.');
@@ -313,7 +309,7 @@ function uploadToS3(file) {
             }
         };
 
-        xhr.onerror = function () {
+        xhr.onerror = function() {
             progressWrap.classList.add('hidden');
             showError('Upload failed. Please try again.');
             uploadBtn.textContent = 'Upload Image';
@@ -324,7 +320,7 @@ function uploadToS3(file) {
         xhr.setRequestHeader('Content-Type', file.type);
         xhr.send(file);
     })
-    .catch(function () {
+    .catch(function() {
         showError('Upload failed. Please try again.');
         uploadBtn.textContent = 'Upload Image';
         uploadBtn.disabled    = false;
@@ -340,11 +336,11 @@ function pollModerationResult(file, imageKey) {
 
     function tryOnce() {
         fetch(API_BASE + '/get-moderation-result?imageKey=' + encodeURIComponent(imageKey))
-        .then(function (res) {
-            if (res.ok) return res.json();
+        .then(function(res) {
+            if (res.ok) { return res.json(); }
             return null;
         })
-        .then(function (data) {
+        .then(function(data) {
             if (data && data.status) {
                 uploadBtn.textContent = 'Upload Image';
                 uploadBtn.disabled    = false;
@@ -360,7 +356,7 @@ function pollModerationResult(file, imageKey) {
                 uploadBtn.disabled    = false;
             }
         })
-        .catch(function () {
+        .catch(function() {
             attempt++;
             if (attempt < maxTries) {
                 setTimeout(tryOnce, delayMs);

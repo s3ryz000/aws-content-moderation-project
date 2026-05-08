@@ -1,127 +1,139 @@
 /* ================================================
-   Content Moderation — Admin UI
+   Content Moderation — Admin Page Styles
+   Tokens and base styles live in ../shared.css.
    ================================================ */
 
-:root {
-    --bg:            #ECF0F8;
-    --surface:       #FFFFFF;
-    --primary:       #2563EB;
-    --text:          #111827;
-    --text-2:        #374151;
-    --text-3:        #6B7280;
-    --text-4:        #9CA3AF;
-    --border:        #E5E7EB;
-    --green:         #16A34A;
-    --green-bg:      #F0FDF4;
-    --green-border:  #BBF7D0;
-    --red:           #DC2626;
-    --red-bg:        #FEF2F2;
-    --red-border:    #FECACA;
-    --orange:        #c2410c;
-    --orange-bg:     #fff7ed;
-    --orange-border: #fed7aa;
-    --shadow:        0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.07);
-    --radius:        14px;
-    --radius-sm:     8px;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-/* ---- NAVBAR ---- */
-.navbar {
-    height: 56px;
-    background: #0F172A;
-    display: flex;
-    align-items: center;
-    padding: 0 28px;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    border-bottom: 1px solid #1E293B;
-}
-.navbar-brand { display: flex; align-items: center; gap: 12px; }
-.navbar-logo {
-    width: 32px; height: 32px;
-    background: var(--primary);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 13px; color: #fff;
-}
-.navbar-name { color: #F8FAFC; font-weight: 600; font-size: 15px; display: block; }
-.navbar-sub  { color: #94A3B8; font-size: 11px; display: block; }
-
 /* ---- MAIN ---- */
-.main { flex: 1; padding: 28px; max-width: 1200px; width: 100%; margin: 0 auto; }
 
-.page-header { margin-bottom: 20px; }
-.page-header h1 { font-size: 22px; font-weight: 700; }
-.page-header p  { color: var(--text-3); margin-top: 4px; }
+.main {
+    flex: 1;
+    padding: 28px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.page-header             { margin-bottom: 20px; }
+.page-header h1          { font-size: 22px; font-weight: 700; }
+.page-header p           { color: var(--text-3); margin-top: 4px; }
 
 /* ---- TOOLBAR ---- */
-.toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
 
 /* ---- FILTER CHIPS ---- */
+
 .chip {
     padding: 6px 14px;
     border-radius: 20px;
     border: 1px solid var(--border);
     background: var(--surface);
     color: var(--text-2);
-    font-size: 13px; font-weight: 500;
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.15s;
+    font-family: inherit;
+    white-space: nowrap;
 }
+
 .chip:hover { border-color: var(--primary); color: var(--primary); }
+
 .chip.active-all      { background: var(--primary); border-color: var(--primary); color: #fff; }
 .chip.active-flagged  { background: var(--red);     border-color: var(--red);     color: #fff; }
 .chip.active-blocked  { background: var(--orange);  border-color: var(--orange);  color: #fff; }
 .chip.active-approved { background: var(--green);   border-color: var(--green);   color: #fff; }
 
+/* Count badge rendered via data attribute */
+.chip[data-count]::after {
+    content: attr(data-count);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: rgba(0,0,0,0.12);
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
 /* ---- TOOLBAR BUTTONS ---- */
+
 .btn {
     padding: 6px 14px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     background: var(--surface);
     color: var(--text-2);
-    font-size: 13px; font-weight: 500;
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.15s;
+    font-family: inherit;
 }
-.btn:hover { background: var(--bg); }
+
+.btn:hover   { background: var(--bg); }
 .btn-refresh { margin-left: auto; }
 
-/* ---- ERROR BANNER ---- */
+/* ---- ERROR TOAST ---- */
+
 .error-banner {
+    position: relative;
     background: var(--red-bg);
     border: 1px solid var(--red-border);
     color: var(--red);
     border-radius: var(--radius-sm);
-    padding: 10px 14px;
+    padding: 10px 40px 10px 14px;
     margin-bottom: 14px;
     font-size: 13px;
     display: none;
+    animation: toastIn 0.2s ease;
 }
+
 .error-banner.visible { display: block; }
 
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+.toast-close {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--red);
+    cursor: pointer;
+    padding: 4px 6px;
+    font-size: 14px;
+    line-height: 1;
+    border-radius: 3px;
+    font-family: inherit;
+}
+
+.toast-close:hover { background: var(--red-border); }
+
 /* ---- TABLE CARD ---- */
+
 .table-card {
     background: var(--surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     overflow: hidden;
 }
+
 .table-wrap { overflow-x: auto; }
 
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -141,11 +153,11 @@ thead th {
     top: 56px;
 }
 
-tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
 tbody tr:last-child { border-bottom: none; }
 tbody tr:nth-child(odd)  { background: var(--bg); }
 tbody tr:nth-child(even) { background: var(--surface); }
-tbody tr:hover { background: #EFF6FF; }
+tbody tr:hover           { background: #EFF6FF; }
 
 tbody td { padding: 10px 14px; vertical-align: middle; }
 
@@ -160,43 +172,142 @@ td.key-cell {
 }
 
 /* ---- STATUS BADGE ---- */
+
 .badge {
     display: inline-block;
     padding: 3px 10px;
     border-radius: 12px;
-    font-size: 11px; font-weight: 600;
+    font-size: 11px;
+    font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
+
 .badge-approved { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-border); }
 .badge-flagged  { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
 .badge-blocked  { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
 
 /* ---- DECISION CELL ---- */
+
 td.decision-cell         { color: var(--text-4); font-style: italic; }
 td.decision-cell.decided { color: var(--text-2); font-style: normal; font-weight: 500; }
 .decided-label           { color: var(--text-4); font-size: 12px; }
 
 /* ---- ACTION BUTTONS ---- */
+
 .action-btns { display: flex; gap: 6px; }
 
-.btn-approve, .btn-reject {
-    padding: 4px 10px;
+.btn-approve,
+.btn-reject {
+    padding: 6px 12px;
+    min-height: 36px;
     border-radius: 6px;
-    font-size: 12px; font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
     border: 1px solid;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
 }
-.btn-approve { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
-.btn-approve:hover { background: var(--green); color: #fff; }
-.btn-reject  { background: var(--red-bg);   color: var(--red);   border-color: var(--red-border); }
-.btn-reject:hover  { background: var(--red);   color: #fff; }
-.btn-approve:disabled, .btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* ---- STATES ---- */
-.empty-state, .loading-state {
+.btn-approve { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+.btn-approve:hover:not(:disabled) { background: var(--green); color: #fff; }
+
+.btn-reject  { background: var(--red-bg);   color: var(--red);   border-color: var(--red-border); }
+.btn-reject:hover:not(:disabled)  { background: var(--red);   color: #fff; }
+
+.btn-approve:disabled,
+.btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---- SKELETON ---- */
+
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+.skeleton {
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-row td { padding: 14px; }
+
+/* ---- EMPTY STATE ---- */
+
+.empty-state {
     text-align: center;
-    padding: 40px;
+    padding: 52px 20px;
     color: var(--text-3);
+}
+
+.empty-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+    color: var(--text-4);
+}
+
+.empty-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 6px;
+}
+
+.empty-sub { font-size: 13px; color: var(--text-4); }
+
+/* ---- MOBILE — card-per-row layout below 768px ---- */
+
+@media (max-width: 768px) {
+    .main { padding: 16px; }
+
+    table, thead, tbody, th, td, tr { display: block; }
+
+    thead tr {
+        position: absolute;
+        width: 1px; height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+    }
+
+    tbody tr {
+        margin-bottom: 12px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border) !important;
+        background: var(--surface) !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    tbody td:last-child { border-bottom: none; }
+
+    tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-4);
+        width: 86px;
+        flex-shrink: 0;
+    }
+
+    td.key-cell { font-size: 11px; max-width: unset; white-space: normal; word-break: break-all; }
+    .action-btns { flex: 1; gap: 8px; }
+    .btn-approve, .btn-reject { flex: 1; justify-content: center; }
+    .table-card { background: transparent; box-shadow: none; border-radius: 0; }
+    .table-wrap { overflow-x: visible; }
 }

@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AWS Content Moderation System — powered by Amazon Rekognition">
-    <title>Content Moderation — AWS Prototype</title>
+    <meta name="description" content="Upload images for automatic content moderation powered by Amazon Rekognition.">
+    <title>Content Moderation — Upload</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232563EB'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='system-ui%2Csans-serif' font-weight='700' font-size='13' fill='white'%3ECM%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="shared.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -18,9 +20,11 @@
             </div>
         </div>
         <div class="navbar-right">
+            <a href="/frontend/" class="nav-link" aria-current="page">Upload</a>
+            <a href="/frontend/admin/" class="nav-link">Admin</a>
             <div class="status-pill" id="statusPill">
                 <span class="status-dot"></span>
-                <span id="statusText">Checking...</span>
+                <span id="statusText">Checking&hellip;</span>
             </div>
         </div>
     </nav>
@@ -71,7 +75,7 @@
                     <p class="preview-name" id="fileName"></p>
                     <p class="preview-size" id="fileSize"></p>
                 </div>
-                <button class="clear-btn" id="clearBtn" title="Remove file">&#x2715;</button>
+                <button class="clear-btn" id="clearBtn" title="Remove file" aria-label="Remove selected file">&#x2715;</button>
             </div>
 
             <div class="progress-wrap hidden" id="progressWrap">
@@ -80,6 +84,8 @@
             </div>
 
             <button class="btn btn-primary" id="uploadBtn" disabled>Upload Image</button>
+
+            <a href="/frontend/admin/" class="btn btn-subtle">Open Admin Dashboard &rarr;</a>
 
         </div>
 
