@@ -24,16 +24,15 @@ def lambda_handler(event: dict, context: Any) -> dict:
     if method == "OPTIONS":
         return {"statusCode": 200, "headers": CORS_HEADERS, "body": ""}
 
-    path_params: dict = event.get("pathParameters") or {}
-    image_key: str | None = path_params.get("imageKey")
-    if not image_key:
-        return _error(400, "Missing imageKey path parameter")
-
     try:
         raw_body = event.get("body") or "{}"
         body = json.loads(raw_body)
     except (json.JSONDecodeError, TypeError):
         return _error(400, "Invalid JSON body")
+
+    image_key = body.get("imageKey")
+    if not isinstance(image_key, str) or not image_key:
+        return _error(400, "Missing or invalid imageKey in request body")
 
     decision: str | None = body.get("decision")
     if not decision or decision not in VALID_DECISIONS:

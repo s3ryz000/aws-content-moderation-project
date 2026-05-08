@@ -54,8 +54,7 @@ def test_approve_existing_item_returns_200():
     result = lambda_handler(
         apigw_event(
             "POST",
-            body={"decision": "APPROVED"},
-            path_params={"imageKey": "uploads/img.png"},
+            body={"imageKey": "uploads/img.png", "decision": "APPROVED"},
         ),
         None,
     )
@@ -76,8 +75,7 @@ def test_reject_existing_item_returns_200():
     result = lambda_handler(
         apigw_event(
             "POST",
-            body={"decision": "REJECTED"},
-            path_params={"imageKey": "uploads/img.png"},
+            body={"imageKey": "uploads/img.png", "decision": "REJECTED"},
         ),
         None,
     )
@@ -96,8 +94,7 @@ def test_decision_persists_in_dynamodb():
     lambda_handler(
         apigw_event(
             "POST",
-            body={"decision": "APPROVED"},
-            path_params={"imageKey": "uploads/img.png"},
+            body={"imageKey": "uploads/img.png", "decision": "APPROVED"},
         ),
         None,
     )
@@ -117,8 +114,7 @@ def test_original_status_not_overwritten():
     lambda_handler(
         apigw_event(
             "POST",
-            body={"decision": "APPROVED"},
-            path_params={"imageKey": "uploads/img.png"},
+            body={"imageKey": "uploads/img.png", "decision": "APPROVED"},
         ),
         None,
     )
@@ -135,8 +131,7 @@ def test_missing_image_key_returns_404():
     result = lambda_handler(
         apigw_event(
             "POST",
-            body={"decision": "APPROVED"},
-            path_params={"imageKey": "uploads/missing.png"},
+            body={"imageKey": "uploads/missing.png", "decision": "APPROVED"},
         ),
         None,
     )
@@ -148,8 +143,7 @@ def test_invalid_decision_returns_400():
     result = lambda_handler(
         apigw_event(
             "POST",
-            body={"decision": "MAYBE"},
-            path_params={"imageKey": "uploads/img.png"},
+            body={"imageKey": "uploads/img.png", "decision": "MAYBE"},
         ),
         None,
     )
@@ -162,10 +156,22 @@ def test_invalid_decision_returns_400():
 @mock_aws
 def test_missing_decision_field_returns_400():
     result = lambda_handler(
-        apigw_event("POST", body={}, path_params={"imageKey": "uploads/img.png"}),
+        apigw_event("POST", body={"imageKey": "uploads/img.png"}),
         None,
     )
     assert result["statusCode"] == 400
+
+
+@mock_aws
+def test_missing_image_key_in_body_returns_400():
+    result = lambda_handler(
+        apigw_event("POST", body={"decision": "APPROVED"}),
+        None,
+    )
+    body = json.loads(result["body"])
+
+    assert result["statusCode"] == 400
+    assert "imageKey" in body["error"]
 
 
 @mock_aws
@@ -185,8 +191,7 @@ def test_dynamodb_get_error_returns_500():
         result = lambda_handler(
             apigw_event(
                 "POST",
-                body={"decision": "APPROVED"},
-                path_params={"imageKey": "uploads/img.png"},
+                body={"imageKey": "uploads/img.png", "decision": "APPROVED"},
             ),
             None,
         )

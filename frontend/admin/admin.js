@@ -124,16 +124,15 @@ function recordDecision(imageKey, decision, buttonEl) {
     var buttons    = actionCell.querySelectorAll('button');
     buttons.forEach(function(b) { b.disabled = true; });
 
-    var encoded    = encodeURIComponent(imageKey);
     var authHeader = getAuthHeader();
 
-    fetch(API_BASE + '/admin/moderation/' + encoded + '/decision', {
+    fetch(API_BASE + '/admin/moderation/decision', {
         method:  'POST',
         headers: {
             'Content-Type':  'application/json',
             'Authorization': authHeader['Authorization']
         },
-        body: JSON.stringify({ decision: decision })
+        body: JSON.stringify({ imageKey: imageKey, decision: decision })
     })
         .then(function(resp) {
             if (resp.status === 401) { logout(); return null; }

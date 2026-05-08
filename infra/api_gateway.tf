@@ -104,7 +104,7 @@ resource "aws_apigatewayv2_route" "get_admin_moderation" {
 
 resource "aws_apigatewayv2_route" "post_admin_decision" {
   api_id             = aws_apigatewayv2_api.main.id
-  route_key          = "POST /admin/moderation/{imageKey}/decision"
+  route_key          = "POST /admin/moderation/decision"
   target             = "integrations/${aws_apigatewayv2_integration.decide_moderation.id}"
   authorization_type = "JWT"
   authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
