@@ -52,26 +52,27 @@ function setFilter(chipEl, status) {
     applyFilter();
 }
 
+// Filter predicates. Source of truth for both the filter view and the chip counts.
+// FLAGGED = auto-flagged AND not yet reviewed; BLOCKED = auto-blocked OR manually rejected;
+// APPROVED = admin approved (regardless of original Rekognition status).
+function matchesFilter(row, key) {
+    if (key === '')         { return true; }
+    if (key === 'FLAGGED')  { return row.status === 'FLAGGED' && !row.manualDecision; }
+    if (key === 'BLOCKED')  { return row.status === 'BLOCKED' || row.manualDecision === 'REJECTED'; }
+    if (key === 'APPROVED') { return row.manualDecision === 'APPROVED'; }
+    return false;
+}
+
 function applyFilter() {
-    currentRows = currentStatus
-        ? allRows.filter(function(r) { return r.status === currentStatus; })
-        : allRows.slice();
+    currentRows = allRows.filter(function(r) { return matchesFilter(r, currentStatus); });
     renderTable(currentRows);
 }
 
 function updateCounts() {
-    var counts = { '': allRows.length, FLAGGED: 0, BLOCKED: 0, APPROVED: 0 };
-    allRows.forEach(function(r) {
-        if (Object.prototype.hasOwnProperty.call(counts, r.status)) { counts[r.status]++; }
-    });
-    [
-        { sel: '[data-status=""]',         n: counts['']       },
-        { sel: '[data-status="FLAGGED"]',  n: counts.FLAGGED   },
-        { sel: '[data-status="BLOCKED"]',  n: counts.BLOCKED   },
-        { sel: '[data-status="APPROVED"]', n: counts.APPROVED  }
-    ].forEach(function(c) {
-        var el = document.querySelector('.chip' + c.sel);
-        if (el) { el.setAttribute('data-count', c.n); }
+    ['', 'FLAGGED', 'BLOCKED', 'APPROVED'].forEach(function(key) {
+        var n  = allRows.filter(function(r) { return matchesFilter(r, key); }).length;
+        var el = document.querySelector('.chip[data-status="' + key + '"]');
+        if (el) { el.setAttribute('data-count', n); }
     });
 }
 
@@ -119,7 +120,6 @@ function renderTable(items) {
 // ---- RECORD DECISION ----
 
 function recordDecision(imageKey, decision, buttonEl) {
-    var row        = buttonEl.closest('tr');
     var actionCell = buttonEl.closest('td');
     var buttons    = actionCell.querySelectorAll('button');
     buttons.forEach(function(b) { b.disabled = true; });
@@ -141,11 +141,6 @@ function recordDecision(imageKey, decision, buttonEl) {
         })
         .then(function(data) {
             if (!data) { return; }
-            var cells = row.querySelectorAll('td');
-            cells[3].className   = 'decision-cell decided';
-            cells[3].textContent = data.manualDecision;
-            actionCell.innerHTML = '<span class="decided-label">Decided</span>';
-
             for (var i = 0; i < allRows.length; i++) {
                 if (allRows[i].imageKey === imageKey) {
                     allRows[i].manualDecision    = data.manualDecision;
@@ -153,6 +148,8 @@ function recordDecision(imageKey, decision, buttonEl) {
                     break;
                 }
             }
+            updateCounts();
+            applyFilter();
         })
         .catch(function() {
             buttons.forEach(function(b) { b.disabled = false; });
