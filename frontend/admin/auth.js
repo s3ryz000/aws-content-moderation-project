@@ -44,7 +44,7 @@ function logout() {
     localStorage.removeItem('expiresAt');
     window.location.href = COGNITO_DOMAIN + '/logout'
         + '?client_id='  + encodeURIComponent(CLIENT_ID)
-        + '&logout_uri=' + encodeURIComponent('http://localhost:8080/frontend/admin/index.html');
+        + '&logout_uri=' + encodeURIComponent('http://localhost:8080/frontend/');
 }
 
 function _generateVerifier() {
