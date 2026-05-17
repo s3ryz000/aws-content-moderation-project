@@ -6,6 +6,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 DYNAMODB_TABLE = os.environ.get("DYNAMODB_TABLE", "image-moderation-results")
+BUCKET_NAME = os.environ.get("BUCKET_NAME", "")
 GSI_NAME = "status-timestamp-index"
 VALID_STATUSES = {"APPROVED", "FLAGGED", "BLOCKED"}
 DEFAULT_LIMIT = 100
@@ -18,6 +19,20 @@ CORS_HEADERS = {
 }
 
 dynamodb_client = boto3.client("dynamodb")
+s3_client = boto3.client("s3") if BUCKET_NAME else None
+
+
+def _get_image_url(image_key: str) -> str | None:
+    if not s3_client or not BUCKET_NAME:
+        return None
+    try:
+        return s3_client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": BUCKET_NAME, "Key": image_key},
+            ExpiresIn=3600,
+        )
+    except Exception:
+        return None
 
 
 def lambda_handler(event: dict, context: Any) -> dict:
@@ -90,10 +105,12 @@ def _query_all(limit: int) -> list[dict]:
 
 
 def _deserialize(item: dict) -> dict:
+    image_key = item["imageKey"]["S"]
     out: dict = {
-        "imageKey": item["imageKey"]["S"],
+        "imageKey": image_key,
         "status": item["status"]["S"],
         "timestamp": item.get("timestamp", {}).get("S", ""),
+        "imageUrl": _get_image_url(image_key),
         "moderationLabels": [
             {
                 "Name": entry.get("M", {}).get("Name", {}).get("S", ""),
