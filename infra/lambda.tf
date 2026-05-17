@@ -99,6 +99,7 @@ resource "aws_lambda_function" "list_moderation" {
     variables = {
       DYNAMODB_TABLE  = var.table_name
       FRONTEND_ORIGIN = var.frontend_origin
+      BUCKET_NAME     = var.bucket_name
     }
   }
 }

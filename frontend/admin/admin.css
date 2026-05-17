@@ -219,6 +219,25 @@ td.decision-cell.decided { color: var(--text-2); font-style: normal; font-weight
 .btn-approve:disabled,
 .btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
 
+.btn-view {
+    padding: 6px 12px;
+    min-height: 36px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transition: all 0.15s;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.btn-view:hover { background: var(--bg); border-color: var(--primary); color: var(--primary); }
+
 /* ---- SKELETON ---- */
 
 @keyframes shimmer {

@@ -115,6 +115,11 @@ data "aws_iam_policy_document" "list_moderation" {
       "${aws_dynamodb_table.results.arn}/index/status-timestamp-index",
     ]
   }
+  statement {
+    effect    = "Allow"
+    actions   = ["s3:GetObject"]
+    resources = ["arn:aws:s3:::${var.bucket_name}/*"]
+  }
 }
 
 resource "aws_iam_role_policy" "list_moderation" {

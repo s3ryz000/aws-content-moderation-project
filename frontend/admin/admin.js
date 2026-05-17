@@ -96,14 +96,18 @@ function renderTable(items) {
         var badgeClass    = 'badge-' + item.status.toLowerCase();
         var decisionText  = item.manualDecision || '—';
         var decisionClass = item.manualDecision ? 'decision-cell decided' : 'decision-cell';
-        var actionsHtml   = item.manualDecision
-            ? '<span class="decided-label">Decided</span>'
-            : '<div class="action-btns">'
-                + '<button class="btn-approve" onclick="recordDecision(\''
-                + escKey(item.imageKey) + '\', \'APPROVED\', this)">Approve</button>'
-                + '<button class="btn-reject" onclick="recordDecision(\''
-                + escKey(item.imageKey) + '\', \'REJECTED\', this)">Reject</button>'
-              + '</div>';
+        var viewBtn       = item.imageUrl
+            ? '<a class="btn-view" href="' + escHtml(item.imageUrl) + '" target="_blank" rel="noopener noreferrer">View</a>'
+            : '';
+        var actionsHtml   = '<div class="action-btns">'
+            + viewBtn
+            + (item.manualDecision
+                ? '<span class="decided-label">Decided</span>'
+                : '<button class="btn-approve" onclick="recordDecision(\''
+                    + escKey(item.imageKey) + '\', \'APPROVED\', this)">Approve</button>'
+                  + '<button class="btn-reject" onclick="recordDecision(\''
+                    + escKey(item.imageKey) + '\', \'REJECTED\', this)">Reject</button>')
+            + '</div>';
 
         return '<tr>'
             + '<td class="key-cell" data-label="Image Key" title="' + escHtml(item.imageKey) + '">'

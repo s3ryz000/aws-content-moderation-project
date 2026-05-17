@@ -156,9 +156,7 @@ function showResult(file, moderationData) {
     resultBadge.className   = 'result-badge ' + status.toLowerCase();
 
     var stepDefs = [
-        { icon: 'ok', text: 'Image received: ' + file.name + ' — ' + formatSize(file.size) },
-        { icon: 'ok', text: 'Uploaded to S3 bucket' },
-        { icon: 'ok', text: 'Scanned by Amazon Rekognition' }
+        { icon: 'ok', text: 'Image received: ' + file.name + ' — ' + formatSize(file.size) }
     ];
 
     if (isBlocked) {
@@ -303,7 +301,7 @@ function uploadToS3(file) {
                 uploadBtn.textContent = 'Scanning image…';
                 pollModerationResult(file, imageKey);
             } else {
-                showError('Upload to S3 failed. Please try again.');
+                showError('Upload failed. Please try again.');
                 uploadBtn.textContent = 'Upload Image';
                 uploadBtn.disabled    = false;
             }
