@@ -196,7 +196,7 @@ function showResult(file, moderationData) {
             def.labels.forEach(function(lbl) {
                 var pill = document.createElement('span');
                 pill.className   = 'label-pill';
-                pill.textContent = lbl;
+                pill.textContent = lbl.name + ' — ' + lbl.confidence.toFixed(1) + '%';
                 pills.appendChild(pill);
             });
             body.appendChild(pills);
@@ -342,7 +342,7 @@ function pollModerationResult(file, imageKey) {
             if (data && data.status) {
                 uploadBtn.textContent = 'Upload Image';
                 uploadBtn.disabled    = false;
-                showResult(file, { status: data.status, labels: data.moderationLabels || [] });
+                showResult(file, { status: data.status, labels: data.moderationLabels || [] }); // labels: [{name, confidence}]
                 return;
             }
             attempt++;
