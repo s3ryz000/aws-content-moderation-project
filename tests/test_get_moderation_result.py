@@ -72,7 +72,7 @@ def test_known_key_returns_200_with_status_and_timestamp():
 
 
 @mock_aws
-def test_known_key_returns_label_names():
+def test_single_label_includes_name_and_confidence():
     ddb = boto3.client("dynamodb", region_name="ap-southeast-2")
     _make_table(ddb)
     _seed_item(
@@ -86,7 +86,57 @@ def test_known_key_returns_label_names():
     body = json.loads(result["body"])
 
     assert result["statusCode"] == 200
-    assert body["moderationLabels"] == ["Suggestive"]
+    assert len(body["moderationLabels"]) == 1
+    lbl = body["moderationLabels"][0]
+    assert lbl["name"] == "Suggestive"
+    assert lbl["confidence"] == 75.0
+
+
+@mock_aws
+def test_label_objects_have_name_and_confidence_keys():
+    ddb = boto3.client("dynamodb", region_name="ap-southeast-2")
+    _make_table(ddb)
+    _seed_item(
+        ddb,
+        "uploads/weapons.jpg",
+        "BLOCKED",
+        [{"Name": "Weapons", "Confidence": 99.9, "ParentName": "Violence"}],
+    )
+
+    result = lambda_handler(apigw_event("GET", qs={"imageKey": "uploads/weapons.jpg"}), None)
+    body = json.loads(result["body"])
+
+    lbl = body["moderationLabels"][0]
+    assert "name" in lbl
+    assert "confidence" in lbl
+
+
+@mock_aws
+def test_multiple_labels_all_include_confidence():
+    ddb = boto3.client("dynamodb", region_name="ap-southeast-2")
+    _make_table(ddb)
+    _seed_item(
+        ddb,
+        "uploads/multi.jpg",
+        "FLAGGED",
+        [
+            {"Name": "Weapons", "Confidence": 99.9, "ParentName": "Violence"},
+            {"Name": "Violence", "Confidence": 99.9, "ParentName": ""},
+            {"Name": "Rude Gestures", "Confidence": 0.05, "ParentName": ""},
+        ],
+    )
+
+    result = lambda_handler(apigw_event("GET", qs={"imageKey": "uploads/multi.jpg"}), None)
+    body = json.loads(result["body"])
+
+    assert len(body["moderationLabels"]) == 3
+    for lbl in body["moderationLabels"]:
+        assert "name" in lbl
+        assert "confidence" in lbl
+    names = [lbl["name"] for lbl in body["moderationLabels"]]
+    assert "Weapons" in names
+    assert "Rude Gestures" in names
+    assert body["moderationLabels"][2]["confidence"] == 0.05
 
 
 @mock_aws

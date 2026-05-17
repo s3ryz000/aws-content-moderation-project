@@ -44,7 +44,13 @@ def lambda_handler(event: dict, context: Any) -> dict:
         return _error(404, "Result not found")
 
     labels_raw: list = item.get("moderationLabels", {}).get("L", [])
-    label_names = [entry.get("M", {}).get("Name", {}).get("S", "") for entry in labels_raw]
+    labels = [
+        {
+            "name": entry.get("M", {}).get("Name", {}).get("S", ""),
+            "confidence": float(entry.get("M", {}).get("Confidence", {}).get("N", "0")),
+        }
+        for entry in labels_raw
+    ]
 
     return {
         "statusCode": 200,
@@ -52,7 +58,7 @@ def lambda_handler(event: dict, context: Any) -> dict:
         "body": json.dumps(
             {
                 "status": item["status"]["S"],
-                "moderationLabels": label_names,
+                "moderationLabels": labels,
                 "timestamp": item.get("timestamp", {}).get("S", ""),
             }
         ),
